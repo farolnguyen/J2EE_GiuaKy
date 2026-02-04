@@ -25,6 +25,16 @@ public class UserController {
         return "user/login";
     }
 
+    @GetMapping("/api-login")
+    public String apiLogin() {
+        return "user/api-login";
+    }
+
+    @GetMapping("/oauth-callback")
+    public String oauthCallback() {
+        return "user/oauth-callback";
+    }
+
     @GetMapping("/register")
     public String register(@NotNull Model model) {
         model.addAttribute("user", new User());

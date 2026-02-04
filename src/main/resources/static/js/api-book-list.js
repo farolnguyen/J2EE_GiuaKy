@@ -1,7 +1,18 @@
 // API Book List JavaScript
-const API_BASE_URL = 'http://localhost:8080/api/v1';
+const API_BASE_URL = '/api/v1';
+let isAdmin = false;
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Check user role
+    const userRoleInput = document.getElementById('userRole');
+    isAdmin = userRoleInput && userRoleInput.value === 'ADMIN';
+    
+    // Show/hide Actions column header based on role
+    const actionsHeader = document.getElementById('actions-header');
+    if (actionsHeader && isAdmin) {
+        actionsHeader.style.display = '';
+    }
+    
     loadBooks();
 });
 
@@ -28,29 +39,32 @@ function displayBooks(books) {
     const tbody = document.getElementById('book-table-body');
     
     if (books.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No books found</td></tr>';
+        const colspan = isAdmin ? 6 : 5;
+        tbody.innerHTML = `<tr><td colspan="${colspan}" class="text-center text-muted">No books found</td></tr>`;
         return;
     }
     
-    tbody.innerHTML = books.map(book => `
-        <tr>
-            <td>${book.id}</td>
-            <td><strong>${escapeHtml(book.title)}</strong></td>
-            <td>${escapeHtml(book.author)}</td>
-            <td>$${book.price.toFixed(2)}</td>
-            <td><span class="badge bg-info">${escapeHtml(book.category)}</span></td>
+    tbody.innerHTML = books.map(book => {
+        const actionsCell = isAdmin ? `
             <td>
                 <div class="btn-group" role="group">
-                    <a href="/books/api-edit/${book.id}" class="btn btn-sm btn-warning">
-                        <i class="bi bi-pencil"></i> Edit
-                    </a>
-                    <button class="btn btn-sm btn-danger" onclick="deleteBook(${book.id})">
-                        <i class="bi bi-trash"></i> Delete
-                    </button>
+                    <a href="/books/api-edit/${book.id}" class="btn btn-sm btn-outline-primary">Sửa</a>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteBook(${book.id})">Xóa</button>
                 </div>
             </td>
-        </tr>
-    `).join('');
+        ` : '';
+        
+        return `
+            <tr>
+                <td>${book.id}</td>
+                <td><strong>${escapeHtml(book.title)}</strong></td>
+                <td>${escapeHtml(book.author)}</td>
+                <td>${book.price.toLocaleString()} VND</td>
+                <td><span class="badge bg-secondary">${escapeHtml(book.category)}</span></td>
+                ${actionsCell}
+            </tr>
+        `;
+    }).join('');
 }
 
 function deleteBook(id) {

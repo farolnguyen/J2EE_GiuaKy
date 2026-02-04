@@ -26,39 +26,37 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="/">Home</a>
+                            <a class="nav-link" href="/">Home</a>
                         </li>
                         <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN','USER')">
-                            <a class="nav-link" href="/books">
-                                List Book
-                            </a>
-                        </li>
-                        <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN')">
-                            <a class="nav-link" href="/books/add">
-                                Add Book
-                            </a>
+                            <a class="nav-link" href="/books">List Book</a>
                         </li>
                         <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN','USER')">
-                            <a class="nav-link" href="/books/api-list">
-                                <span class="badge bg-gradient text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                                    🚀 API Book List
-                                </span>
-                            </a>
+                            <a class="nav-link" href="/books/api-list">API Book List</a>
                         </li>
                         <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN','USER')">
-                            <a class="nav-link" href="/cart">
-                                Cart
-                            </a>
+                            <a class="nav-link" href="/cart">Cart</a>
                         </li>
-                        <li sec:authorize="isAuthenticated()">
-                            <form th:action="@{/logout}" method="post">
-                                <button class="btn btn-outline-danger" type="submit">Logout</button>
+                        <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN','USER')">
+                            <a class="nav-link" href="/api-login">JWT Test</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+                        <li class="nav-item me-3" sec:authorize="isAuthenticated()">
+                            <span class="navbar-text" sec:authorize="hasAuthority('ADMIN')">
+                                Xin chào Admin, <strong sec:authentication="name"></strong>
+                            </span>
+                            <span class="navbar-text" sec:authorize="!hasAuthority('ADMIN')">
+                                Xin chào, <strong sec:authentication="name"></strong>
+                            </span>
+                        </li>
+                        <li class="nav-item" sec:authorize="isAuthenticated()">
+                            <form th:action="@{/logout}" method="post" class="d-inline" id="logoutForm">
+                                <button class="btn btn-outline-secondary btn-sm" type="button" onclick="handleLogout()">Logout</button>
                             </form>
                         </li>
-                        <li sec:authorize="!isAuthenticated()">
-                            <a class="btn btn-outline-primary" href="/login">
-                                Login
-                            </a>
+                        <li class="nav-item" sec:authorize="!isAuthenticated()">
+                            <a class="btn btn-outline-primary btn-sm" href="/login">Login</a>
                         </li>
                     </ul>
                 </div>
@@ -68,13 +66,25 @@
     <div class="container">
         <div th:fragment="content"></div>
     </div>
-    <footer th:fragment="footer" class="footer mt-auto py-3 bg-light">
-        <div class="container text-center">Copyright &copy;
-            <span th:text="${#dates.year(#dates.createNow())}"></span>
-            <a href="https://www.hutech.edu.vn/">HUTECH Education</a>
+    <footer th:fragment="footer" class="footer mt-auto py-1">
+        <div class="container text-center">
+            <p class="mb-1">Copyright &copy; <span th:text="${#dates.year(#dates.createNow())}"></span></p>
+            <p class="mb-0">Mini-project này được thực hiện bởi <strong>FarolNguyen</strong> a.k.a <strong>Nguyễn Hải Đăng</strong></p>
         </div>
-        <script th:src="@{/js/bootstrap.min.js}"></script>
         <script th:src="@{/js/jquery-3.7.0.min.js}"></script>
+        <script th:src="@{/js/bootstrap.min.js}"></script>
+        <script th:src="@{/js/jwt-interceptor.js}"></script>
+        <script>
+            function handleLogout() {
+                // Clear all JWT data from localStorage
+                localStorage.removeItem('jwt_token');
+                localStorage.removeItem('jwt_user');
+                localStorage.removeItem('jwt_original_token');
+                
+                // Submit the logout form
+                document.getElementById('logoutForm').submit();
+            }
+        </script>
     </footer>
 </body>
 

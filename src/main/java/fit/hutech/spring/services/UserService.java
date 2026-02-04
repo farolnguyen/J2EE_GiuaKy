@@ -81,8 +81,12 @@ public class UserService implements UserDetailsService {
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(username));
         user.setProvider("GOOGLE");
+        
+        // Add USER role directly before saving
+        var userRole = roleRepository.findRoleById(Role.USER.value);
+        user.getRoles().add(userRole);
+        
         userRepository.save(user);
-        setDefaultRole(username);
-        log.info("OAuth user saved successfully");
+        log.info("OAuth user saved successfully with USER role");
     }
 }

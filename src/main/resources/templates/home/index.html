@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -13,13 +13,10 @@
 <body>
     <th:block th:replace="~{layout::header}"></th:block>
     <div class="container">
-        <nav class="navbar navbar-light bg-light">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="#">
-                    TRANG CHỦ ỨNG DỤNG QUẢN LÝ SÁCH - KẾT NỐI CSDL MYSQL
-                </a>
-            </div>
-        </nav>
+        <div class="home-hero">
+            <h1 class="home-title">TRANG CHỦ ỨNG DỤNG QUẢN LÝ SÁCH</h1>
+            <h2 class="home-subtitle">KẾT NỐI CSDL MYSQL</h2>
+        </div>
     </div>
     <th:block th:replace="~{layout::footer}"></th:block>
 </body>

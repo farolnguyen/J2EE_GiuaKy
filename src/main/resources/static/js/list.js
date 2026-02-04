@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function loadBooks(pageNo = 0, pageSize = 20, sortBy = 'id') {
-    const url = `http://localhost:8080/api/v1/books?pageNo=${pageNo}&pageSize=${pageSize}&sortBy=${sortBy}`;
+    const url = `/api/v1/books?pageNo=${pageNo}&pageSize=${pageSize}&sortBy=${sortBy}`;
     
     fetch(url)
         .then(response => {
@@ -52,7 +52,7 @@ function deleteBook(id) {
         return;
     }
     
-    const url = `http://localhost:8080/api/v1/books/${id}`;
+    const url = `/api/v1/books/${id}`;
     
     fetch(url, {
         method: 'DELETE'
@@ -80,7 +80,7 @@ function searchBooks(event) {
         return;
     }
     
-    const url = `http://localhost:8080/api/v1/books/search?keyword=${encodeURIComponent(keyword)}`;
+    const url = `/api/v1/books/search?keyword=${encodeURIComponent(keyword)}`;
     
     fetch(url)
         .then(response => response.json())

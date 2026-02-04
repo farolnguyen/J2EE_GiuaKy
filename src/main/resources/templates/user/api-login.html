@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Login - JWT Authentication</title>
+    <th:block th:replace="~{layout :: link-css}"></th:block>
+    <th:block th:replace="~{layout::custom-css}"></th:block>
+</head>
+
+<body style="background: #f6f7fc;">
+    <th:block th:replace="~{layout :: header}"></th:block>
+    <div class="container py-5" style="padding-bottom: 150px !important;">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-8 col-xl-6">
+                <div class="card shadow" style="border-radius: 1rem;">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h3 class="mb-0">JWT API Login</h3>
+                        <small>Đăng nhập qua REST API</small>
+                    </div>
+                    <div class="card-body p-4">
+                        <!-- Login Form -->
+                        <div id="loginSection">
+                            <div id="alertBox" class="alert d-none" role="alert"></div>
+                            
+                            <form id="loginForm" onsubmit="handleLogin(event)">
+                                <div class="mb-3">
+                                    <label for="username" class="form-label">Username</label>
+                                    <input type="text" class="form-control" id="username" name="username" 
+                                        placeholder="Nhập username" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Password</label>
+                                    <input type="password" class="form-control" id="password" name="password" 
+                                        placeholder="Nhập password" required>
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary btn-lg" id="loginBtn">
+                                        Đăng nhập bằng API
+                                    </button>
+                                </div>
+                            </form>
+                            
+                            <hr class="my-4">
+                            <p class="text-center text-muted mb-0">
+                                Hoặc <a href="/login">đăng nhập thông thường</a>
+                            </p>
+                        </div>
+                        
+                        <!-- Token Info Section (shown after login) -->
+                        <div id="tokenSection" class="d-none">
+                            <div class="alert alert-success">
+                                <strong>Đăng nhập thành công!</strong>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Username:</label>
+                                <p id="loggedUsername" class="mb-0"></p>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Roles:</label>
+                                <p id="userRoles" class="mb-0"></p>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">JWT Token:</label>
+                                <small class="text-muted">(Có thể chỉnh sửa để test token sai)</small>
+                                <textarea id="tokenDisplay" class="form-control" rows="4"></textarea>
+                                <div class="mt-2">
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="copyToken()">
+                                        Copy Token
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-warning" onclick="resetToken()">
+                                        Reset Token gốc
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Token hết hạn sau:</label>
+                                <p id="tokenExpiry" class="mb-0"></p>
+                            </div>
+                            
+                            <hr>
+                            
+                            <h5>Test API Endpoints:</h5>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-info btn-lg" onclick="validateToken()">
+                                    Validate Token
+                                </button>
+                                <button class="btn btn-outline-success btn-lg" onclick="testGetBooks()">
+                                    Test GET /api/v1/books
+                                </button>
+                            </div>
+                            <p class="text-muted text-center mt-3 mb-0">
+                                <small>Use the Logout button in header to sign out</small>
+                            </p>
+                            
+                            <div id="apiResult" class="mt-3 d-none">
+                                <label class="form-label fw-bold">API Response:</label>
+                                <pre id="apiResponse" class="bg-light p-3 rounded" style="max-height: 300px; overflow-y: auto;"></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- API Documentation -->
+                <div class="card mt-4 shadow-sm">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0">API Endpoints</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-sm mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Method</th>
+                                    <th>Endpoint</th>
+                                    <th>Mô tả</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="badge bg-success">POST</span></td>
+                                    <td><code>/api/auth/login</code></td>
+                                    <td>Đăng nhập, nhận JWT token</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-primary">GET</span></td>
+                                    <td><code>/api/auth/validate</code></td>
+                                    <td>Kiểm tra token hợp lệ</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-primary">GET</span></td>
+                                    <td><code>/api/v1/books</code></td>
+                                    <td>Lấy danh sách sách</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p class="text-muted mt-3 mb-0">
+                            <small>Header: <code>Authorization: Bearer &lt;token&gt;</code></small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <th:block th:replace="~{layout :: footer}"></th:block>
+    <script th:src="@{/js/api-login.js}"></script>
+</body>
+
+</html>

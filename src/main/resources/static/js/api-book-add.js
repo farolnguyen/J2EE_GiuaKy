@@ -1,12 +1,12 @@
 // API Book Add JavaScript
-const API_BASE_URL = 'http://localhost:8080/api/v1';
+const API_BASE_URL = '/api/v1';
 
 document.addEventListener('DOMContentLoaded', function() {
     loadCategories();
 });
 
 function loadCategories() {
-    fetch('http://localhost:8080/api/v1/categories')
+    fetch('/api/v1/categories')
         .then(response => {
             if (!response.ok) {
                 throw new Error(`Failed to load categories (Status: ${response.status})`);
