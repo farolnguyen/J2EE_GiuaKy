@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Placed! | Story Station</title>
+    <th:block th:replace="~{layout::link-css}"></th:block>
+    <th:block th:replace="~{layout::custom-css}"></th:block>
+</head>
+
+<body>
+    <th:block th:replace="~{layout::header}"></th:block>
+    
+    <div class="ss-container" style="padding-top: 4rem;">
+        <div class="text-center">
+            <h1 style="font-size: 4rem; color: var(--pine-green);">Order Confirmed</h1>
+            <h1 class="mt-4">Thank You for Your Order!</h1>
+            <p class="lead text-muted">Your order has been placed successfully.</p>
+            
+            <div class="ss-card d-inline-block mt-4" style="max-width: 500px;">
+                <div class="ss-card-body">
+                    <p class="mb-3">We've received your order and will begin processing it shortly.</p>
+                    <p class="text-muted mb-0">A confirmation email will be sent to your registered email address.</p>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <a href="/books" class="ss-btn ss-btn-primary me-2">Continue Shopping</a>
+                <a href="/orders" class="ss-btn ss-btn-secondary">View My Orders</a>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:replace="~{layout::footer}"></th:block>
+</body>
+
+</html>

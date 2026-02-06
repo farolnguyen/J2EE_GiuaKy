@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Order ' + ${order.orderNumber} + ' - Story Station'">Order Details - Story Station</title>
+    <th:block th:replace="~{layout::link-css}"></th:block>
+    <th:block th:replace="~{layout::custom-css}"></th:block>
+</head>
+
+<body>
+    <th:block th:replace="~{layout::header}"></th:block>
+    
+    <div class="ss-container" style="padding-top: 2rem;">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="ss-section-title mb-0">Order <span th:text="${order.orderNumber}">#ORD-001</span></h2>
+            <a href="/orders" class="ss-btn ss-btn-secondary">← Back to Orders</a>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Order Status -->
+                <div class="ss-card mb-4">
+                    <div class="ss-card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <span class="text-muted">Status:</span>
+                                <span class="badge fs-6 ms-2" 
+                                      th:classappend="${order.status.name() == 'PENDING'} ? 'bg-warning' : 
+                                                      (${order.status.name() == 'PROCESSING'} ? 'bg-info' : 
+                                                      (${order.status.name() == 'SHIPPED'} ? 'bg-primary' : 
+                                                      (${order.status.name() == 'DELIVERED'} ? 'bg-success' : 'bg-danger')))"
+                                      th:text="${order.status.displayName}">Pending</span>
+                            </div>
+                            <div class="text-muted">
+                                Ordered on <span th:text="${#dates.format(order.orderDate, 'MMMM dd, yyyy')}">January 01, 2026</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Order Progress Bar -->
+                        <div class="progress-steps mb-3" th:if="${order.status.name() != 'CANCELLED'}">
+                            <div class="d-flex justify-content-between position-relative">
+                                <div class="progress position-absolute w-100" style="height: 4px; top: 15px; z-index: 0;">
+                                    <div class="progress-bar bg-success" role="progressbar" 
+                                         th:style="'width: ' + (${order.status.name() == 'PENDING'} ? '0%' : 
+                                                   (${order.status.name() == 'PROCESSING'} ? '33%' : 
+                                                   (${order.status.name() == 'SHIPPED'} ? '66%' : '100%')))"></div>
+                                </div>
+                                <div class="step text-center" style="z-index: 1;">
+                                    <div class="step-icon rounded-circle d-flex align-items-center justify-content-center mx-auto" 
+                                         style="width: 35px; height: 35px;"
+                                         th:classappend="${order.status.name() == 'PENDING' || order.status.name() == 'PROCESSING' || order.status.name() == 'SHIPPED' || order.status.name() == 'DELIVERED'} ? 'bg-success text-white' : 'bg-light border'">
+                                        ✓
+                                    </div>
+                                    <small class="d-block mt-1">Pending</small>
+                                </div>
+                                <div class="step text-center" style="z-index: 1;">
+                                    <div class="step-icon rounded-circle d-flex align-items-center justify-content-center mx-auto" 
+                                         style="width: 35px; height: 35px;"
+                                         th:classappend="${order.status.name() == 'PROCESSING' || order.status.name() == 'SHIPPED' || order.status.name() == 'DELIVERED'} ? 'bg-success text-white' : 'bg-light border'">
+                                        ✓
+                                    </div>
+                                    <small class="d-block mt-1">Processing</small>
+                                </div>
+                                <div class="step text-center" style="z-index: 1;">
+                                    <div class="step-icon rounded-circle d-flex align-items-center justify-content-center mx-auto" 
+                                         style="width: 35px; height: 35px;"
+                                         th:classappend="${order.status.name() == 'SHIPPED' || order.status.name() == 'DELIVERED'} ? 'bg-success text-white' : 'bg-light border'">
+                                        ✓
+                                    </div>
+                                    <small class="d-block mt-1">Shipped</small>
+                                </div>
+                                <div class="step text-center" style="z-index: 1;">
+                                    <div class="step-icon rounded-circle d-flex align-items-center justify-content-center mx-auto" 
+                                         style="width: 35px; height: 35px;"
+                                         th:classappend="${order.status.name() == 'DELIVERED'} ? 'bg-success text-white' : 'bg-light border'">
+                                        ✓
+                                    </div>
+                                    <small class="d-block mt-1">Delivered</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="d-flex gap-2 mt-3">
+                            <!-- Cancel Button (only for PENDING) -->
+                            <form th:if="${order.status.name() == 'PENDING'}" th:action="@{/orders/{id}/cancel(id=${order.id})}" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Are you sure you want to cancel this order?')">
+                                    Cancel Order
+                                </button>
+                            </form>
+                            
+                            <!-- Download Invoice (only for DELIVERED) -->
+                            <a th:if="${order.status.name() == 'DELIVERED'}" th:href="@{/invoice/download/{id}(id=${order.id})}" class="btn btn-success">
+                                📄 Download Invoice (PDF)
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Items -->
+                <div class="ss-card mb-4">
+                    <div class="ss-card-header">Order Items</div>
+                    <div class="ss-card-body p-0">
+                        <table class="table mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Book</th>
+                                    <th class="text-center">Qty</th>
+                                    <th class="text-end">Price</th>
+                                    <th class="text-end">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="item : ${order.orderItems}">
+                                    <td>
+                                        <a th:href="@{/books/{id}(id=${item.book.id})}" th:text="${item.book.title}">Book Title</a>
+                                        <br>
+                                        <small class="text-muted" th:text="'by ' + ${item.book.author}">by Author</small>
+                                    </td>
+                                    <td class="text-center" th:text="${item.quantity}">1</td>
+                                    <td class="text-end">$<span th:text="${#numbers.formatDecimal(item.priceAtPurchase, 0, 'COMMA', 2, 'POINT')}">0.00</span></td>
+                                    <td class="text-end">$<span th:text="${#numbers.formatDecimal(item.subtotal, 0, 'COMMA', 2, 'POINT')}">0.00</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Shipping Info -->
+                <div class="ss-card">
+                    <div class="ss-card-header">Shipping Address</div>
+                    <div class="ss-card-body">
+                        <p class="mb-1" th:text="${order.shippingAddress}">123 Main St</p>
+                        <p class="mb-1">
+                            <span th:text="${order.shippingCity}">City</span>, 
+                            <span th:text="${order.shippingPostalCode}">12345</span>
+                        </p>
+                        <p class="mb-0" th:text="${order.shippingCountry}">Country</p>
+                        <p class="mb-0 mt-2 text-muted" th:if="${order.notes}">
+                            <em>Note: <span th:text="${order.notes}">Notes</span></em>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Order Summary -->
+                <div class="ss-card">
+                    <div class="ss-card-header">Order Summary</div>
+                    <div class="ss-card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal</span>
+                            <span>$<span th:text="${#numbers.formatDecimal(order.subtotal, 0, 'COMMA', 2, 'POINT')}">0.00</span></span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2" th:if="${order.discountAmount > 0}">
+                            <span>Discount</span>
+                            <span class="text-success">-$<span th:text="${#numbers.formatDecimal(order.discountAmount, 0, 'COMMA', 2, 'POINT')}">0.00</span></span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Shipping</span>
+                            <span class="text-success">Free</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between">
+                            <strong>Total</strong>
+                            <strong style="color: var(--terracotta);">$<span th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 2, 'POINT')}">0.00</span></strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Info -->
+                <div class="ss-card mt-4">
+                    <div class="ss-card-header">Payment</div>
+                    <div class="ss-card-body">
+                        <p class="mb-0" th:text="${order.paymentMethod ?: 'Not specified'}">Payment Method</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:replace="~{layout::footer}"></th:block>
+</body>
+
+</html>

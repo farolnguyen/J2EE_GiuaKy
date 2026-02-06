@@ -14,6 +14,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Objects;
@@ -37,11 +38,12 @@ public class User implements UserDetails {
     private String username;
     @Column(name = "password", length = 250)
     @NotBlank(message = "Password is required")
+    @Size(min = 8, message = "Password must be at least 8 characters")
     private String password;
-    @Column(name = "email", length = 50, unique = true)
+    @Column(name = "email", length = 100, unique = true)
     @NotBlank(message = "Email is required")
-    @Size(min = 1, max = 50, message = "Email must be between 1 and 50characters")
-    @Email
+    @Size(min = 1, max = 100, message = "Email must be between 1 and 100 characters")
+    @Email(message = "Email must be valid format")
     private String email;
     @Column(name = "phone", length = 10, unique = true)
     @Length(min = 10, max = 10, message = "Phone must be 10characters")
@@ -49,12 +51,37 @@ public class User implements UserDetails {
     private String phone;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @ToString.Exclude
+    @Builder.Default
     private Set<Invoice> invoices = new HashSet<>();
     @Column(name = "provider", length = 50)
     private String provider;
+    @Column(name = "shipping_address", length = 255)
+    private String shippingAddress;
+    @Column(name = "shipping_city", length = 100)
+    private String shippingCity;
+    @Column(name = "shipping_postal_code", length = 20)
+    private String shippingPostalCode;
+    @Column(name = "shipping_country", length = 100)
+    private String shippingCountry;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @Builder.Default
     private Set<Role> roles = new HashSet<>();
+
+    @Column(name = "enabled")
+    @Builder.Default
+    private Boolean enabled = true;
+
+    @Column(name = "failed_login_attempts")
+    @Builder.Default
+    private Integer failedLoginAttempts = 0;
+
+    @Column(name = "locked_until")
+    private Date lockedUntil;
+
+    @Column(name = "created_at")
+    @Builder.Default
+    private Date createdAt = new Date();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -81,7 +108,11 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        if (lockedUntil == null) {
+            return true;
+        }
+        // If lock time has passed, account is no longer locked
+        return new Date().after(lockedUntil);
     }
 
     @Override
@@ -91,7 +122,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled != null && enabled;
     }
 
     @Override

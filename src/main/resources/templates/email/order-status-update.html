@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5e6d3;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+        <!-- Header -->
+        <tr>
+            <td style="background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%); padding: 30px; text-align: center;">
+                <h1 style="color: #ffffff; margin: 0; font-size: 28px;">📦 Order Update</h1>
+            </td>
+        </tr>
+        
+        <!-- Content -->
+        <tr>
+            <td style="padding: 40px 30px;">
+                <p style="color: #333; font-size: 16px; line-height: 1.6;">
+                    Hi <strong th:text="${user.username}">User</strong>,
+                </p>
+                <p style="color: #333; font-size: 16px; line-height: 1.6;">
+                    Your order status has been updated!
+                </p>
+                
+                <!-- Status Update Box -->
+                <div style="background-color: #f8f9fa; border-radius: 8px; padding: 25px; margin: 20px 0; text-align: center;">
+                    <p style="color: #666; margin: 0 0 10px 0;">Order <strong th:text="${order.orderNumber}">#ORD-001</strong></p>
+                    <div style="background-color: #d4693f; color: white; padding: 15px 25px; border-radius: 25px; display: inline-block; font-size: 18px; font-weight: bold;">
+                        <span th:text="${status}">Processing</span>
+                    </div>
+                </div>
+                
+                <p style="color: #333; font-size: 16px; line-height: 1.6;">
+                    We'll continue to keep you updated on your order's progress.
+                </p>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="#" style="background-color: #1e3a5f; color: #ffffff; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+                        View Order Details
+                    </a>
+                </div>
+            </td>
+        </tr>
+        
+        <!-- Footer -->
+        <tr>
+            <td style="background-color: #f5e6d3; padding: 20px 30px; text-align: center;">
+                <p style="color: #666; font-size: 12px; margin: 0;">
+                    © 2026 <span th:text="${appName}">Story Station</span>. All rights reserved.
+                </p>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

@@ -18,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -100,29 +101,57 @@ public class AuthController {
     @GetMapping("/oauth-token")
     public ResponseEntity<?> generateOAuthToken() {
         try {
-            // Get authenticated user from OAuth session
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             
-            if (authentication == null || !authentication.isAuthenticated()) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Not authenticated"));
+            log.info("Generating OAuth token for: {}", authentication.getName());
+            
+            // Extract email from OAuth2 or OIDC user
+            String email = null;
+            Object principal = authentication.getPrincipal();
+            
+            if (principal instanceof org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser) {
+                // Google uses OIDC
+                var oidcUser = (org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser) principal;
+                email = oidcUser.getEmail();
+                log.info("OAuth user email from OIDC (Google): {}", email);
+            } else if (principal instanceof org.springframework.security.oauth2.core.user.OAuth2User) {
+                // GitHub/Facebook use OAuth2
+                var oauth2User = (org.springframework.security.oauth2.core.user.OAuth2User) principal;
+                email = oauth2User.getAttribute("email");
+                log.info("OAuth user email from OAuth2 (GitHub/Facebook): {}", email);
             }
-
-            String username = authentication.getName();
+            
+            if (email == null) {
+                log.error("No email found in OAuth authentication");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "No email in OAuth response"));
+            }
+            
+            var userOptional = userService.findByEmail(email);
+            if (userOptional.isEmpty()) {
+                log.error("User not found: {}", email);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "User not found"));
+            }
+            
+            var user = userOptional.get();
+            String username = user.getUsername();
+            log.info("Generating OAuth JWT token for user: {} (email: {})", username, email);
+            
             UserDetails userDetails = userService.loadUserByUsername(username);
             String token = jwtUtil.generateToken(userDetails);
-
-            var roles = userDetails.getAuthorities().stream()
+            
+            List<String> roles = userDetails.getAuthorities().stream()
                 .map(auth -> auth.getAuthority())
                 .toList();
-
+            
             log.info("OAuth JWT token generated for user: {}", username);
-
+            
             return ResponseEntity.ok(LoginResponse.builder()
                 .token(token)
-                .type("Bearer")
                 .username(username)
                 .roles(roles)
+                .type("Bearer")
                 .expiresIn(jwtExpiration)
                 .build());
         } catch (Exception e) {

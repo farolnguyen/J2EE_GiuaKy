@@ -34,17 +34,40 @@ public class OAuthService extends OidcUserService {
         
         Set<GrantedAuthority> authorities = new HashSet<>();
         
-        // Check if user exists in database
-        var userOptional = userRepository.findByUsername(username);
+        // IMPORTANT: Check by EMAIL first, not username
+        // Users may have registered with password (different username) but same email
+        var userOptional = userRepository.findByEmail(email);
         
         if (userOptional.isPresent()) {
             // User exists - load their roles
             var user = userOptional.get();
-            log.info("Existing OIDC user found with {} roles", user.getRoles().size());
-            user.getRoles().forEach(role -> {
-                authorities.add(new SimpleGrantedAuthority(role.getName()));
-                log.info("Added authority: {}", role.getName());
-            });
+            log.info("Existing user found by email: {} with {} roles (username: {})", email, user.getRoles().size(), user.getUsername());
+            
+            // Check if account is enabled
+            if (!user.getEnabled()) {
+                log.warn("Account disabled for user: {}", user.getUsername());
+                throw new OAuth2AuthenticationException("account_disabled");
+            }
+            
+            // Update provider to GOOGLE if needed
+            if (user.getProvider() == null || user.getProvider().equals("LOCAL")) {
+                user.setProvider("GOOGLE");
+                userRepository.save(user);
+                log.info("Updated existing user provider to GOOGLE");
+            }
+            
+            // Load roles and add as authorities
+            if (user.getRoles().isEmpty()) {
+                // User has no roles - add USER authority as default
+                log.warn("User {} has no roles, adding USER authority", user.getUsername());
+                authorities.add(new SimpleGrantedAuthority("USER"));
+            } else {
+                user.getRoles().forEach(role -> {
+                    String roleName = role.getName();
+                    authorities.add(new SimpleGrantedAuthority(roleName));
+                    log.info("Added authority from DB role: '{}'", roleName);
+                });
+            }
         } else {
             // New user - save them and add USER authority directly
             log.info("New OIDC user, creating with USER role");
@@ -52,6 +75,12 @@ public class OAuthService extends OidcUserService {
             // Add USER authority directly
             authorities.add(new SimpleGrantedAuthority("USER"));
             log.info("Added authority: USER (new user)");
+        }
+        
+        // Ensure at least USER authority exists
+        if (authorities.isEmpty()) {
+            log.warn("No authorities found, adding default USER authority");
+            authorities.add(new SimpleGrantedAuthority("USER"));
         }
         
         log.info("Returning OidcUser with {} authorities", authorities.size());

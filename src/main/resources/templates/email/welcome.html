@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5e6d3;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+        <!-- Header -->
+        <tr>
+            <td style="background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%); padding: 30px; text-align: center;">
+                <h1 style="color: #ffffff; margin: 0; font-size: 28px;">📚 Story Station</h1>
+            </td>
+        </tr>
+        
+        <!-- Content -->
+        <tr>
+            <td style="padding: 40px 30px;">
+                <h2 style="color: #1e3a5f; margin-top: 0;">Welcome to Story Station!</h2>
+                <p style="color: #333; font-size: 16px; line-height: 1.6;">
+                    Hi <strong th:text="${username}">User</strong>,
+                </p>
+                <p style="color: #333; font-size: 16px; line-height: 1.6;">
+                    Thank you for joining <span th:text="${appName}">Story Station</span>! We're excited to have you as part of our reading community.
+                </p>
+                <p style="color: #333; font-size: 16px; line-height: 1.6;">
+                    At Story Station, you'll discover:
+                </p>
+                <ul style="color: #333; font-size: 16px; line-height: 1.8;">
+                    <li>📖 A wide selection of books across all genres</li>
+                    <li>💰 Great prices and regular discounts</li>
+                    <li>🚚 Fast and reliable delivery</li>
+                    <li>❤️ Personalized recommendations</li>
+                </ul>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="#" style="background-color: #d4693f; color: #ffffff; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+                        Start Browsing →
+                    </a>
+                </div>
+                
+                <p style="color: #666; font-size: 14px;">
+                    If you have any questions, feel free to reply to this email. We're here to help!
+                </p>
+            </td>
+        </tr>
+        
+        <!-- Footer -->
+        <tr>
+            <td style="background-color: #f5e6d3; padding: 20px 30px; text-align: center;">
+                <p style="color: #666; font-size: 12px; margin: 0;">
+                    © 2026 <span th:text="${appName}">Story Station</span>. All rights reserved.
+                </p>
+                <p style="color: #999; font-size: 11px; margin: 10px 0 0 0;">
+                    You received this email because you created an account on our platform.
+                </p>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

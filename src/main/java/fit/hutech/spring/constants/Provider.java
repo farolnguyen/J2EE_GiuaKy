@@ -5,7 +5,9 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public enum Provider {
     LOCAL("Local"),
-    GOOGLE("Google");
+    GOOGLE("Google"),
+    GITHUB("GitHub"),
+    FACEBOOK("Facebook");
 
     public final String value;
 }

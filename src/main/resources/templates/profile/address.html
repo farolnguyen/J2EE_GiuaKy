@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shipping Address - Story Station</title>
+    <th:block th:replace="~{layout::link-css}"></th:block>
+    <th:block th:replace="~{layout::custom-css}"></th:block>
+</head>
+
+<body>
+    <th:block th:replace="~{layout::header}"></th:block>
+    
+    <div class="ss-container" style="padding-top: 2rem; max-width: 600px;">
+        <div class="d-flex align-items-center gap-3 mb-4">
+            <a href="/profile" class="ss-btn ss-btn-secondary">← Back</a>
+            <h2 class="ss-section-title mb-0">Shipping Address</h2>
+        </div>
+
+        <div class="ss-card">
+            <div class="ss-card-body">
+                <form th:action="@{/profile/address}" method="post">
+                    <div class="mb-3">
+                        <label class="form-label">Street Address <span class="text-danger">*</span></label>
+                        <input type="text" name="shippingAddress" class="form-control ss-form-control" 
+                               th:value="${user.shippingAddress}" required
+                               placeholder="123 Main Street, Apt 4B">
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">City <span class="text-danger">*</span></label>
+                            <input type="text" name="shippingCity" class="form-control ss-form-control" 
+                                   th:value="${user.shippingCity}" required
+                                   placeholder="Ho Chi Minh City">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Postal Code <span class="text-danger">*</span></label>
+                            <input type="text" name="shippingPostalCode" class="form-control ss-form-control" 
+                                   th:value="${user.shippingPostalCode}" required
+                                   placeholder="70000">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label">Country <span class="text-danger">*</span></label>
+                        <input type="text" name="shippingCountry" class="form-control ss-form-control" 
+                               th:value="${user.shippingCountry ?: 'Vietnam'}" required>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="ss-btn ss-btn-primary">Save Address</button>
+                        <a href="/profile" class="ss-btn ss-btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="mt-4 p-3 bg-light rounded">
+            <h6>📍 Why save your address?</h6>
+            <p class="mb-0 small text-muted">
+                Save your shipping address for faster checkout. Your address will be pre-filled when you place orders.
+            </p>
+        </div>
+    </div>
+
+    <th:block th:replace="~{layout::footer}"></th:block>
+</body>
+
+</html>

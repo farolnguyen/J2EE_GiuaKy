@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${book.title} + ' - Story Station'">Book Detail - Story Station</title>
+    <th:block th:replace="~{layout::link-css}"></th:block>
+    <th:block th:replace="~{layout::custom-css}"></th:block>
+    <th:block th:replace="~{layout::animations-css}"></th:block>
+    <style>
+        .book-detail-image {
+            max-height: 400px;
+            width: 100%;
+            object-fit: contain;
+            background: var(--sand-light);
+            border-radius: 12px;
+            padding: 1rem;
+        }
+        .book-detail-info {
+            padding-left: 2rem;
+        }
+        .quantity-input {
+            width: 80px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <th:block th:replace="~{layout::header}"></th:block>
+    
+    <div class="ss-container" style="padding-top: 2rem;">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/books">Books</a></li>
+                <li class="breadcrumb-item active" th:text="${book.title}">Book Title</li>
+            </ol>
+        </nav>
+
+        <div class="row mb-5">
+            <!-- Book Image -->
+            <div class="col-md-5">
+                <div class="ss-card">
+                    <div class="ss-card-body text-center">
+                        <img th:if="${book.imageUrl}" th:src="${book.imageUrl}" th:alt="${book.title}" class="book-detail-image">
+                        <div th:unless="${book.imageUrl}" class="book-detail-image d-flex align-items-center justify-content-center" style="height: 400px;">
+                            <span class="text-muted" style="font-size: 2rem;">No Image Available</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Book Info -->
+            <div class="col-md-7">
+                <div class="book-detail-info">
+                    <span class="ss-featured-badge mb-3 d-inline-block" th:if="${book.featured}" style="position: relative;">Best Seller</span>
+                    <div class="ss-book-category mb-2" th:text="${book.category?.name}">Category</div>
+                    <h1 class="mb-2" th:text="${book.title}">Book Title</h1>
+                    <p class="text-muted mb-3" th:text="'by ' + ${book.author}">by Author</p>
+                    
+                    <!-- Price -->
+                    <div class="mb-4">
+                        <span class="ss-price-original me-2" th:if="${book.discount != null && book.discount > 0}" style="font-size: 1.5rem;">
+                            $<span th:text="${#numbers.formatDecimal(book.price, 0, 'COMMA', 2, 'POINT')}">0.00</span>
+                        </span>
+                        <span class="ss-price-current" style="font-size: 2rem;">
+                            $<span th:text="${#numbers.formatDecimal(book.price * (1 - (book.discount ?: 0)/100), 0, 'COMMA', 2, 'POINT')}">0.00</span>
+                        </span>
+                        <span th:if="${book.discount != null && book.discount > 0}" class="badge bg-success ms-2">
+                            <span th:text="${book.discount}">0</span>% OFF
+                        </span>
+                    </div>
+                    
+                    <!-- Stock Status -->
+                    <div class="mb-4">
+                        <span class="ss-stock-badge in-stock" th:if="${book.stock != null && book.stock > 5}">
+                            ✓ In Stock (<span th:text="${book.stock}">0</span> available)
+                        </span>
+                        <span class="ss-stock-badge low-stock" th:if="${book.stock != null && book.stock > 0 && book.stock <= 5}">
+                            ⚠ Only <span th:text="${book.stock}">0</span> left in stock
+                        </span>
+                        <span class="ss-stock-badge out-of-stock" th:if="${book.stock == null || book.stock <= 0}">
+                            ✗ Out of Stock
+                        </span>
+                    </div>
+                    
+                    <!-- Add to Cart Form -->
+                    <form th:action="@{/cart/add}" method="post" class="mb-4" sec:authorize="hasAnyAuthority('ADMIN','USER')">
+                        <input type="hidden" name="id" th:value="${book.id}">
+                        <div class="d-flex align-items-center gap-3">
+                            <div>
+                                <label class="form-label mb-1">Quantity</label>
+                                <input type="number" name="quantity" value="1" min="1" 
+                                       th:max="${book.stock}" class="form-control quantity-input">
+                            </div>
+                            <div class="pt-4">
+                                <button type="submit" class="ss-btn ss-btn-primary" 
+                                        th:disabled="${book.stock == null || book.stock <= 0}">
+                                    Add to Cart
+                                </button>
+                                <a th:href="@{/wishlist/add/{id}(id=${book.id})}" class="ss-btn ss-btn-secondary">
+                                    Add to Wishlist
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <!-- Book Details -->
+                    <div class="ss-card">
+                        <div class="ss-card-header">Book Details</div>
+                        <div class="ss-card-body">
+                            <table class="table table-borderless mb-0">
+                                <tr th:if="${book.publisher}">
+                                    <td class="text-muted" style="width: 150px;">Publisher</td>
+                                    <td th:text="${book.publisher}">Publisher Name</td>
+                                </tr>
+                                <tr th:if="${book.publicationYear}">
+                                    <td class="text-muted">Publication Year</td>
+                                    <td th:text="${book.publicationYear}">2024</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">Category</td>
+                                    <td th:text="${book.category?.name}">Category</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Description -->
+        <div class="ss-card mb-5" th:if="${book.description}">
+            <div class="ss-card-header">Description</div>
+            <div class="ss-card-body">
+                <p th:text="${book.description}" style="white-space: pre-line;">Book description goes here...</p>
+            </div>
+        </div>
+        
+        <!-- Related Books -->
+        <section class="mb-5" th:if="${relatedBooks != null && !relatedBooks.isEmpty()}">
+            <h2 class="ss-section-title">You May Also Like</h2>
+            <div class="row g-4">
+                <div class="col-6 col-md-3" th:each="related : ${relatedBooks}">
+                    <a th:href="@{/books/{id}(id=${related.id})}" class="text-decoration-none">
+                        <div class="ss-book-card">
+                            <div class="ss-book-image">
+                                <img th:if="${related.imageUrl}" th:src="${related.imageUrl}" th:alt="${related.title}">
+                                <span th:unless="${related.imageUrl}" class="no-image">No Image</span>
+                            </div>
+                            <div class="ss-book-body">
+                                <h3 class="ss-book-title" th:text="${related.title}">Book Title</h3>
+                                <p class="ss-book-author" th:text="'by ' + ${related.author}">by Author</p>
+                                <div class="ss-book-price">
+                                    <span class="ss-price-current">
+                                        $<span th:text="${#numbers.formatDecimal(related.price * (1 - (related.discount ?: 0)/100), 0, 'COMMA', 2, 'POINT')}">0.00</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <th:block th:replace="~{layout::footer}"></th:block>
+</body>
+
+</html>

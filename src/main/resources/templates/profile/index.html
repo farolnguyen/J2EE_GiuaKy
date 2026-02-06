@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Story Station</title>
+    <th:block th:replace="~{layout::link-css}"></th:block>
+    <th:block th:replace="~{layout::custom-css}"></th:block>
+    <style>
+        .profile-header { background: linear-gradient(135deg, var(--navy-blue) 0%, #2d4a6f 100%); color: white; padding: 3rem 2rem; border-radius: 16px; margin-bottom: 2rem; }
+        .profile-avatar { width: 100px; height: 100px; background: var(--terracotta); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: white; border: 4px solid white; }
+        .profile-stats { display: flex; gap: 2rem; margin-top: 1.5rem; }
+        .profile-stat { text-align: center; }
+        .profile-stat .value { font-size: 1.5rem; font-weight: 700; }
+        .profile-stat .label { font-size: 0.85rem; opacity: 0.8; }
+        .profile-menu-item { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.25rem; border-radius: 10px; text-decoration: none; color: var(--navy-blue); transition: all 0.2s; }
+        .profile-menu-item:hover { background: var(--sand-light); color: var(--terracotta); }
+        .profile-menu-item .icon { font-size: 1.5rem; }
+        .profile-menu-item .text { font-weight: 500; }
+        .profile-menu-item .arrow { margin-left: auto; opacity: 0.5; }
+    </style>
+</head>
+
+<body>
+    <th:block th:replace="~{layout::header}"></th:block>
+    
+    <div class="ss-container" style="padding-top: 2rem; margin-bottom: 50px;">
+        <!-- Success/Error Messages -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${success}">Success</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${error}">Error</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="d-flex align-items-center gap-4">
+                <div class="profile-avatar">
+                    <span th:text="${#strings.toUpperCase(#strings.substring(user.username, 0, 1))}">U</span>
+                </div>
+                <div>
+                    <h2 class="mb-1" style="color: #fff;" th:text="${user.username}">Username</h2>
+                    <p class="mb-0 opacity-75" th:text="${user.email}">email@example.com</p>
+                    <span class="badge bg-light text-dark mt-2" th:if="${user.provider}">
+                        <span th:text="${user.provider}">Provider</span> Account
+                    </span>
+                </div>
+            </div>
+            <div class="profile-stats">
+                <div class="profile-stat">
+                    <div class="value" th:text="${orderCount}">0</div>
+                    <div class="label">Orders</div>
+                </div>
+                <div class="profile-stat">
+                    <div class="value" th:text="${wishlistCount}">0</div>
+                    <div class="label">Wishlist</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Profile Menu -->
+            <div class="col-lg-4 mb-4">
+                <div class="ss-card">
+                    <div class="ss-card-header">Account Menu</div>
+                    <div class="ss-card-body p-2">
+                        <a href="/profile/edit" class="profile-menu-item">
+                            <span class="text"><strong>Edit Profile</strong></span>
+                            <span class="arrow">→</span>
+                        </a>
+                        <a href="/profile/password" class="profile-menu-item">
+                            <span class="text"><strong>Change Password</strong></span>
+                            <span class="arrow">→</span>
+                        </a>
+                        <a href="/profile/address" class="profile-menu-item">
+                            <span class="text"><strong>Shipping Address</strong></span>
+                            <span class="arrow">→</span>
+                        </a>
+                        <a href="/orders" class="profile-menu-item">
+                            <span class="text"><strong>My Orders</strong></span>
+                            <span class="arrow">→</span>
+                        </a>
+                        <a href="/wishlist" class="profile-menu-item">
+                            <span class="text">❤️<strong>My Wishlist</strong></span>
+                            <span class="arrow">→</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Details -->
+            <div class="col-lg-8">
+                <div class="ss-card mb-4">
+                    <div class="ss-card-header d-flex justify-content-between align-items-center">
+                        <span>Account Information</span>
+                        <a href="/profile/edit" class="btn btn-sm btn-outline-secondary">Edit</a>
+                    </div>
+                    <div class="ss-card-body">
+                        <div class="row mb-3">
+                            <div class="col-sm-4 text-muted">Username</div>
+                            <div class="col-sm-8" th:text="${user.username}">username</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-4 text-muted">Email</div>
+                            <div class="col-sm-8" th:text="${user.email}">email@example.com</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-4 text-muted">Phone</div>
+                            <div class="col-sm-8" th:text="${user.phone ?: 'Not provided'}">Not provided</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4 text-muted">Account Type</div>
+                            <div class="col-sm-8" th:text="${user.provider ?: 'Email/Password'}">Email/Password</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ss-card">
+                    <div class="ss-card-header d-flex justify-content-between align-items-center">
+                        <span>Shipping Address</span>
+                        <a href="/profile/address" class="btn btn-sm btn-outline-secondary">Edit</a>
+                    </div>
+                    <div class="ss-card-body">
+                        <div th:if="${user.shippingAddress != null}">
+                            <p class="mb-1" th:text="${user.shippingAddress}">Address</p>
+                            <p class="mb-1">
+                                <span th:text="${user.shippingCity}">City</span>, 
+                                <span th:text="${user.shippingPostalCode}">Postal</span>
+                            </p>
+                            <p class="mb-0" th:text="${user.shippingCountry}">Country</p>
+                        </div>
+                        <div th:if="${user.shippingAddress == null}" class="text-muted">
+                            <p class="mb-2">No shipping address saved</p>
+                            <a href="/profile/address" class="ss-btn ss-btn-secondary">Add Address</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:replace="~{layout::footer}"></th:block>
+</body>
+
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Categories - Admin | Story Station</title>
+    <th:block th:replace="~{admin/admin-layout :: admin-css}"></th:block>
+    <th:block th:replace="~{admin/admin-layout :: admin-inline-css}"></th:block>
+</head>
+
+<body>
+    <th:block th:replace="~{admin/admin-layout :: sidebar}"></th:block>
+    
+    <main class="admin-main">
+        <header class="admin-header">
+            <div>
+                <h5 class="mb-0">Manage Categories</h5>
+            </div>
+        </header>
+        
+        <div class="admin-content">
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <span th:text="${success}">Success</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span th:text="${error}">Error</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="admin-card">
+                        <div class="admin-card-header">Add New Category</div>
+                        <div class="admin-card-body">
+                            <form th:action="@{/admin/categories/add}" method="post" th:object="${newCategory}">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Category Name</label>
+                                    <input type="text" class="form-control" id="name" th:field="*{name}" required>
+                                </div>
+                                <button type="submit" class="btn btn-admin w-100">Add Category</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-8">
+                    <div class="admin-card">
+                        <div class="admin-card-header">All Categories</div>
+                        <div class="admin-card-body">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Books Count</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="category : ${categories}">
+                                        <td th:text="${category.id}">1</td>
+                                        <td th:text="${category.name}">Category Name</td>
+                                        <td th:text="${category.books != null} ? ${category.books.size()} : 0">0</td>
+                                        <td>
+                                            <a th:href="@{/admin/categories/delete/{id}(id=${category.id})}" 
+                                               class="btn btn-sm btn-outline-danger"
+                                               onclick="return confirm('Delete this category? Books in this category will become uncategorized.')">
+                                                Delete
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(categories)}">
+                                        <td colspan="4" class="text-center text-muted">No categories yet</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <th:block th:replace="~{admin/admin-layout :: admin-scripts}"></th:block>
+</body>
+
+</html>

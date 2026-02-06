@@ -5,76 +5,183 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Book List</title>
+    <title>Browse Books - Story Station</title>
     <th:block th:replace="~{layout::link-css}"></th:block>
     <th:block th:replace="~{layout::custom-css}"></th:block>
+    <th:block th:replace="~{layout::animations-css}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/books.css}">
+    <style>
+        .filter-sidebar { background: var(--sand-light); border-radius: 12px; padding: 1.5rem; }
+        .filter-section { margin-bottom: 1.5rem; }
+        .filter-section h5 { color: var(--navy-blue); font-weight: 600; margin-bottom: 0.75rem; font-size: 0.95rem; }
+        .filter-option { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+        .filter-option input[type="checkbox"], .filter-option input[type="radio"] { accent-color: var(--terracotta); }
+        .price-inputs { display: flex; gap: 0.5rem; align-items: center; }
+        .price-inputs input { width: 80px; padding: 0.35rem 0.5rem; border: 1px solid #dee2e6; border-radius: 6px; }
+        .active-filters { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+        .filter-tag { background: var(--navy-blue); color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; }
+        .filter-tag a { color: white; text-decoration: none; }
+        .sort-dropdown { position: relative; display: inline-block; }
+        .sort-dropdown select { appearance: none; background: white; border: 1px solid #dee2e6; border-radius: 8px; padding: 0.5rem 2rem 0.5rem 1rem; cursor: pointer; }
+    </style>
 </head>
 
 <body>
     <th:block th:replace="~{layout::header}"></th:block>
-    <div class="container mt-4">
+    
+    <div class="ss-container" style="padding-top: 2rem; margin-bottom: 50px;">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="page-title">Danh Sách Sách</h2>
-            <a href="/books/add" class="btn btn-primary" sec:authorize="hasAuthority('ADMIN')">Thêm Sách Mới</a>
+            <h2 class="ss-section-title">Browse Books</h2>
+            <a href="/admin/books/add" class="ss-btn ss-btn-primary" sec:authorize="hasAuthority('ADMIN')">+ Add New Book</a>
         </div>
         
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <form class="d-flex" th:action="@{/books/search}" method="get">
-                    <input class="form-control me-2" type="search" placeholder="Tìm kiếm sách..." 
-                        aria-label="Search" name="keyword">
-                    <button class="btn btn-outline-primary" type="submit">Tìm</button>
+        <div class="books-layout">
+            <!-- Filters Sidebar -->
+            <div class="books-filter-sidebar">
+                <form th:action="@{/books}" method="get" id="filterForm">
+                    <!-- Search -->
+                    <div class="filter-section">
+                        <h5>Search</h5>
+                        <input type="text" name="keyword" class="form-control ss-form-control" 
+                               placeholder="Title or author..." th:value="${keyword}">
+                    </div>
+                    
+                    <!-- Categories -->
+                    <div class="filter-section">
+                        <h5>Category</h5>
+                        <div class="filter-option">
+                            <input type="radio" name="categoryId" value="" id="cat-all" 
+                                   th:checked="${selectedCategory == null}">
+                            <label for="cat-all">All Categories</label>
+                        </div>
+                        <div class="filter-option" th:each="cat : ${categories}">
+                            <input type="radio" name="categoryId" th:value="${cat.id}" th:id="'cat-' + ${cat.id}"
+                                   th:checked="${selectedCategory == cat.id}">
+                            <label th:for="'cat-' + ${cat.id}" th:text="${cat.name}">Category</label>
+                        </div>
+                    </div>
+                    
+                    <!-- Price Range -->
+                    <div class="filter-section">
+                        <h5>Price Range</h5>
+                        <div class="price-inputs">
+                            <input type="number" name="minPrice" placeholder="Min" step="0.01" th:value="${minPrice}">
+                            <span>-</span>
+                            <input type="number" name="maxPrice" placeholder="Max" step="0.01" th:value="${maxPrice}">
+                        </div>
+                    </div>
+                    
+                    <!-- Availability -->
+                    <div class="filter-section">
+                        <h5>Availability</h5>
+                        <div class="filter-option">
+                            <input type="checkbox" name="inStock" value="true" id="in-stock"
+                                   th:checked="${inStock == true}">
+                            <label for="in-stock">In Stock Only</label>
+                        </div>
+                    </div>
+                    
+                    <!-- Sort -->
+                    <div class="filter-section">
+                        <h5>Sort By</h5>
+                        <select name="sortBy" class="form-select ss-form-control">
+                            <option value="newest" th:selected="${sortBy == 'newest'}">Newest First</option>
+                            <option value="priceAsc" th:selected="${sortBy == 'priceAsc'}">Price: Low to High</option>
+                            <option value="priceDesc" th:selected="${sortBy == 'priceDesc'}">Price: High to Low</option>
+                            <option value="titleAsc" th:selected="${sortBy == 'titleAsc'}">Title: A-Z</option>
+                            <option value="titleDesc" th:selected="${sortBy == 'titleDesc'}">Title: Z-A</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="ss-btn ss-btn-primary w-100 mb-2">Apply Filters</button>
+                    <a href="/books" class="ss-btn ss-btn-secondary w-100 text-center">Clear All</a>
                 </form>
             </div>
-            <div class="col-md-6 text-end">
-                <span class="text-muted">Sắp xếp: </span>
-                <a th:href="@{/books(pageNo=${currentPage}, sortBy='title')}" class="btn btn-sm btn-outline-secondary">Tên</a>
-                <a th:href="@{/books(pageNo=${currentPage}, sortBy='author')}" class="btn btn-sm btn-outline-secondary">Tác giả</a>
-                <a th:href="@{/books(pageNo=${currentPage}, sortBy='price')}" class="btn btn-sm btn-outline-secondary">Giá</a>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-4 mb-4" th:each="book : ${books}">
-                <div class="card book-card h-100">
-                    <div class="card-body">
-                        <span class="badge bg-secondary mb-2" th:text="${book.getCategory().getName()}"></span>
-                        <h5 class="card-title" th:text="${book.getTitle()}"></h5>
-                        <p class="card-text text-muted">
-                            <strong>Tác giả:</strong> <span th:text="${book.getAuthor()}"></span>
-                        </p>
-                        <p class="card-text book-price">
-                            <span th:text="${#numbers.formatDecimal(book.getPrice(), 0, 'COMMA', 0, 'POINT')}"></span> VND
-                        </p>
+            
+            <!-- Books Grid -->
+            <div class="books-main-content">
+                <!-- Active Filters & Results Count -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <span class="text-muted" th:text="'Showing ' + ${resultsCount} + ' books'">Showing 0 books</span>
                     </div>
-                    <div class="card-footer bg-white border-top-0">
-                        <div class="d-flex flex-wrap gap-1">
-                            <a class="btn btn-sm btn-outline-dark" sec:authorize="hasAuthority('ADMIN')"
-                                th:href="@{/books/edit/{id}(id=${book.getId()})}">Sửa</a>
-                            <a class="btn btn-sm btn-outline-danger" sec:authorize="hasAuthority('ADMIN')"
-                                th:href="@{/books/delete/{id}(id=${book.getId()})}" 
-                                onclick="return confirm('Bạn có chắc muốn xóa sách này?')">Xóa</a>
-                            <form th:action="@{/books/add-to-cart}" method="post" class="d-inline">
-                                <input type="hidden" name="id" th:value="${book.getId()}">
-                                <input type="hidden" name="name" th:value="${book.getTitle()}">
-                                <input type="hidden" name="price" th:value="${book.getPrice()}">
-                                <button type="submit" class="btn btn-sm btn-success" 
-                                    onclick="return confirm('Thêm vào giỏ hàng?')">Thêm vào giỏ</button>
+                    <div class="active-filters" th:if="${keyword != null || selectedCategory != null || minPrice != null || maxPrice != null || inStock == true}">
+                        <span th:if="${keyword != null}" class="filter-tag">
+                            "<span th:text="${keyword}">keyword</span>" <a th:href="@{/books(categoryId=${selectedCategory}, minPrice=${minPrice}, maxPrice=${maxPrice}, inStock=${inStock}, sortBy=${sortBy})}">✕</a>
+                        </span>
+                        <span th:if="${selectedCategory != null}" class="filter-tag">
+                            Category <a th:href="@{/books(keyword=${keyword}, minPrice=${minPrice}, maxPrice=${maxPrice}, inStock=${inStock}, sortBy=${sortBy})}">✕</a>
+                        </span>
+                        <span th:if="${minPrice != null || maxPrice != null}" class="filter-tag">
+                            Price filter <a th:href="@{/books(keyword=${keyword}, categoryId=${selectedCategory}, inStock=${inStock}, sortBy=${sortBy})}">✕</a>
+                        </span>
+                        <span th:if="${inStock == true}" class="filter-tag">
+                            In Stock <a th:href="@{/books(keyword=${keyword}, categoryId=${selectedCategory}, minPrice=${minPrice}, maxPrice=${maxPrice}, sortBy=${sortBy})}">✕</a>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div th:if="${books == null || books.isEmpty()}" class="text-center py-5">
+                    <h2 class="text-muted">No Results</h2>
+                    <h4 class="mt-3">No books found</h4>
+                    <p class="text-muted">Try adjusting your filters or search terms</p>
+                    <a href="/books" class="ss-btn ss-btn-primary">Clear Filters</a>
+                </div>
+
+                <!-- Books Grid -->
+                <div class="books-grid-container" th:if="${books != null && !books.isEmpty()}">
+                    <div class="book-card" th:each="book : ${books}" style="position: relative;">
+                        <span class="ss-featured-badge" th:if="${book.featured}">BEST SELLER</span>
+                        <a th:href="@{/books/{id}(id=${book.id})}" style="text-decoration: none; color: inherit;">
+                            <div class="book-card-image">
+                                <img th:if="${book.imageUrl}" th:src="${book.imageUrl}" th:alt="${book.title}">
+                                <span th:unless="${book.imageUrl}" class="no-image">No Image</span>
+                            </div>
+                            <div class="book-card-body">
+                                <div class="book-card-category" th:text="${book.category?.name}">Category</div>
+                                <h3 class="book-card-title" th:text="${book.title}">Book Title</h3>
+                                <p class="book-card-author" th:text="'by ' + ${book.author}">by Author</p>
+                                <div class="book-card-price">
+                                    <span class="ss-price-original" th:if="${book.discount != null && book.discount > 0}">
+                                        $<span th:text="${#numbers.formatDecimal(book.price, 0, 'COMMA', 2, 'POINT')}">0.00</span>
+                                    </span>
+                                    <span class="ss-price-current">
+                                        $<span th:text="${#numbers.formatDecimal(book.price * (1 - (book.discount ?: 0)/100), 0, 'COMMA', 2, 'POINT')}">0.00</span>
+                                    </span>
+                                </div>
+                                <div th:if="${book.stock != null}" class="mt-2">
+                                    <span class="ss-stock-badge in-stock" th:if="${book.stock > 5}">In Stock</span>
+                                    <span class="ss-stock-badge low-stock" th:if="${book.stock > 0 && book.stock <= 5}" th:text="'Only ' + ${book.stock} + ' left'">Low</span>
+                                    <span class="ss-stock-badge out-of-stock" th:if="${book.stock <= 0}">Out of Stock</span>
+                                </div>
+                            </div>
+                        </a>
+                        <div class="book-card-actions">
+                            <form th:action="@{/cart/add}" method="post" class="d-inline flex-grow-1">
+                                <input type="hidden" name="id" th:value="${book.id}">
+                                <button type="submit" class="ss-btn ss-btn-primary w-100" 
+                                    th:disabled="${book.stock != null && book.stock <= 0}">Add to Cart</button>
                             </form>
                         </div>
                     </div>
                 </div>
+
+                <!-- Pagination -->
+                <nav aria-label="Page navigation" class="mt-4 mb-5" th:if="${totalPages != null && totalPages > 1}">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" 
+                            th:classappend="${currentPage == i ? 'active' : ''}">
+                            <a class="page-link" 
+                               th:href="@{/books(pageNo=${i}, keyword=${keyword}, categoryId=${selectedCategory}, minPrice=${minPrice}, maxPrice=${maxPrice}, inStock=${inStock}, sortBy=${sortBy})}" 
+                               th:text="${i + 1}">1</a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
         </div>
-
-        <nav aria-label="Page navigation" class="mt-3">
-            <ul class="pagination justify-content-center" th:each="i : ${#numbers.sequence(0, totalPages)}">
-                <li class="page-item" th:classappend="${currentPage == i ? 'active' : ''}">
-                    <a class="page-link" th:href="@{/books(pageNo=${i})}" th:text="${i + 1}"></a>
-                </li>
-            </ul>
-        </nav>
     </div>
+    
     <th:block th:replace="~{layout::footer}"></th:block>
 </body>
 

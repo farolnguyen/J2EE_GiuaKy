@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Reports - Admin | Story Station</title>
+    <th:block th:replace="~{admin/admin-layout :: admin-css}"></th:block>
+    <th:block th:replace="~{admin/admin-layout :: admin-inline-css}"></th:block>
+</head>
+
+<body>
+    <th:block th:replace="~{admin/admin-layout :: sidebar}"></th:block>
+    
+    <main class="admin-main">
+        <header class="admin-header">
+            <div>
+                <h5 class="mb-0">Sales Reports</h5>
+            </div>
+            <div>
+                <a th:href="@{/admin/reports/export}" class="btn btn-success">
+                    📊 Export to Excel
+                </a>
+            </div>
+        </header>
+        
+        <div class="admin-content">
+            <!-- Summary Stats -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="admin-card stat-card">
+                        <div class="stat-value">$<span th:text="${#numbers.formatDecimal(totalRevenue ?: 0, 0, 'COMMA', 2, 'POINT')}">0</span></div>
+                        <div class="stat-label">Total Revenue</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="admin-card stat-card">
+                        <div class="stat-value text-warning" th:text="${pendingOrders}">0</div>
+                        <div class="stat-label">Pending Orders</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="admin-card stat-card">
+                        <div class="stat-value text-success" th:text="${completedOrders}">0</div>
+                        <div class="stat-label">Completed Orders</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="admin-card stat-card">
+                        <div class="stat-value text-danger" th:text="${cancelledOrders}">0</div>
+                        <div class="stat-label">Cancelled Orders</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="admin-card">
+                        <div class="admin-card-header d-flex justify-content-between align-items-center">
+                            <span>⚠️ Low Stock Alerts</span>
+                            <span class="badge bg-danger" th:text="${#lists.size(lowStockBooks)}">0</span>
+                        </div>
+                        <div class="admin-card-body p-0">
+                            <table class="table table-hover mb-0" th:if="${!#lists.isEmpty(lowStockBooks)}">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Book</th>
+                                        <th class="text-center">Stock</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="book : ${lowStockBooks}">
+                                        <td>
+                                            <strong th:text="${book.title}">Book Title</strong>
+                                            <br>
+                                            <small class="text-muted" th:text="${book.author}">Author</small>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge" th:classappend="${book.stock == 0} ? 'bg-danger' : 'bg-warning'" 
+                                                  th:text="${book.stock}">0</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge" th:classappend="${book.enabled} ? 'bg-success' : 'bg-secondary'"
+                                                  th:text="${book.enabled} ? 'Active' : 'Disabled'">Status</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="text-center py-4" th:if="${#lists.isEmpty(lowStockBooks)}">
+                                <p class="text-success mb-0">✓ All books have sufficient stock</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="admin-card">
+                        <div class="admin-card-header">Export Options</div>
+                        <div class="admin-card-body">
+                            <p class="text-muted mb-3">Download comprehensive reports in Excel format:</p>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">✓ Summary with total revenue</li>
+                                <li class="mb-2">✓ Top 10 best-selling books</li>
+                                <li class="mb-2">✓ Top 10 highest stock books</li>
+                                <li class="mb-2">✓ Complete orders list</li>
+                            </ul>
+                            <a th:href="@{/admin/reports/export}" class="btn btn-success w-100">
+                                📊 Download Full Report (Excel)
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <th:block th:replace="~{admin/admin-layout :: admin-scripts}"></th:block>
+</body>
+
+</html>

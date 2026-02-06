@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Admin | Story Station</title>
+    <th:block th:replace="~{admin/admin-layout :: admin-css}"></th:block>
+    <th:block th:replace="~{admin/admin-layout :: admin-inline-css}"></th:block>
+    <style>
+        .stat-card-icon { font-size: 2.5rem; opacity: 0.8; }
+        .stat-card-mini { background: white; border-radius: 10px; padding: 1rem; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .stat-card-mini .value { font-size: 1.5rem; font-weight: 700; color: #1e3a5f; }
+        .stat-card-mini .label { font-size: 0.8rem; color: #6c757d; }
+        .quick-action-btn { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1.25rem; background: white; border: 2px solid #dee2e6; border-radius: 12px; text-decoration: none; color: #1e3a5f; transition: all 0.2s; }
+        .quick-action-btn:hover { border-color: #d4693f; color: #d4693f; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .quick-action-btn .icon { font-size: 1.75rem; }
+        .quick-action-btn .text { font-weight: 500; font-size: 0.9rem; }
+        .progress-thin { height: 6px; border-radius: 3px; }
+        .category-item { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid #eee; }
+        .category-item:last-child { border-bottom: none; }
+    </style>
+</head>
+
+<body>
+    <th:block th:replace="~{admin/admin-layout :: sidebar}"></th:block>
+    
+    <main class="admin-main">
+        <header class="admin-header">
+            <div>
+                <h5 class="mb-0">Dashboard</h5>
+                <small class="text-muted">Welcome back! Here's your store overview.</small>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <span class="text-muted">Logged in as <strong sec:authentication="name">Admin</strong></span>
+                <a href="/" class="btn btn-sm btn-outline-secondary">View Store →</a>
+            </div>
+        </header>
+        
+        <div class="admin-content">
+            <!-- Main Stats Cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <div class="admin-card stat-card" style="background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%); color: white;">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="stat-value" style="color: rgba(255,255,255,0.8);" th:text="${totalBooks}">0</div>
+                                <div class="stat-label" style="color: rgba(255,255,255,0.8);">Total Books</div>
+                            </div>
+                                                    </div>
+                        <div class="mt-2">
+                            <small style="color: rgba(255,255,255,0.7);">
+                                <span th:text="${featuredBooks}">0</span> featured
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="admin-card stat-card" style="background: linear-gradient(135deg, #d4693f 0%, #e07850 100%); color: white;">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="stat-value" style="color: rgba(255,255,255,0.8);"th:text="${pendingOrders}">0</div>
+                                <div class="stat-label" style="color: rgba(255,255,255,0.8);">Pending Orders</div>
+                            </div>
+                                                    </div>
+                        <div class="mt-2">
+                            <small style="color: rgba(255,255,255,0.7);">
+                                <span th:text="${processingOrders}">0</span> processing
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="admin-card stat-card" style="background: linear-gradient(135deg, #3d5a3d 0%, #4d6a4d 100%); color: white;">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="stat-value"style="color: rgba(255,255,255,0.8);">$<span th:text="${#numbers.formatDecimal(totalRevenue ?: 0, 0, 'COMMA', 0, 'POINT')}">0</span></div>
+                                <div class="stat-label" style="color: rgba(255,255,255,0.8);">Total Revenue</div>
+                            </div>
+                                                    </div>
+                        <div class="mt-2">
+                            <small style="color: rgba(255,255,255,0.7);">
+                                <span th:text="${completedOrders}">0</span> completed orders
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="admin-card stat-card" th:style="${lowStockBooks > 0} ? 'background: linear-gradient(135deg, #dc3545 0%, #e04555 100%); color: white;' : 'background: linear-gradient(135deg, #6c757d 0%, #7c858d 100%); color: white;'">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="stat-value"style="color: rgba(255,255,255,0.8);" th:text="${lowStockBooks}">0</div>
+                                <div class="stat-label" style="color: rgba(255,255,255,0.8);">Low Stock</div>
+                            </div>
+                                                    </div>
+                        <div class="mt-2">
+                            <small style="color: rgba(255,255,255,0.7);">
+                                <span th:text="${outOfStockBooks}">0</span> out of stock
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="admin-card mb-4">
+                <div class="admin-card-header">Quick Actions</div>
+                <div class="admin-card-body">
+                    <div class="row g-3">
+                        <div class="col-md-2 col-4">
+                            <a href="/admin/books/add" class="quick-action-btn">
+                                <span class="text"><strong>Add Book</strong></span>
+                            </a>
+                        </div>
+                        <div class="col-md-2 col-4">
+                            <a href="/admin/orders?status=PENDING" class="quick-action-btn">
+                                <span class="text"><strong>Pending Orders</strong></span>
+                            </a>
+                        </div>
+                        <div class="col-md-2 col-4">
+                            <a href="/admin/categories" class="quick-action-btn">
+                                <span class="text"><strong>Categories</strong></span>
+                            </a>
+                        </div>
+                        <div class="col-md-2 col-4">
+                            <a href="/admin/users" class="quick-action-btn">
+                                <span class="text"><strong>Users</strong></span>
+                            </a>
+                        </div>
+                        <div class="col-md-2 col-4">
+                            <a href="/admin/reports" class="quick-action-btn">
+                                <span class="text"><strong>Reports</strong></span>
+                            </a>
+                        </div>
+                        <div class="col-md-2 col-4">
+                            <a href="/admin/books" class="quick-action-btn">
+                                <span class="text"><strong>All Books</strong></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Secondary Stats Row -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-2 col-4">
+                    <div class="stat-card-mini">
+                        <div class="value" th:text="${totalCategories}">0</div>
+                        <div class="label">Categories</div>
+                    </div>
+                </div>
+                <div class="col-md-2 col-4">
+                    <div class="stat-card-mini">
+                        <div class="value" th:text="${totalUsers}">0</div>
+                        <div class="label">Users</div>
+                    </div>
+                </div>
+                <div class="col-md-2 col-4">
+                    <div class="stat-card-mini">
+                        <div class="value" th:text="${featuredBooks}">0</div>
+                        <div class="label">Featured</div>
+                    </div>
+                </div>
+                <div class="col-md-2 col-4">
+                    <div class="stat-card-mini">
+                        <div class="value" th:text="${processingOrders}">0</div>
+                        <div class="label">Processing</div>
+                    </div>
+                </div>
+                <div class="col-md-2 col-4">
+                    <div class="stat-card-mini">
+                        <div class="value" th:text="${completedOrders}">0</div>
+                        <div class="label">Delivered</div>
+                    </div>
+                </div>
+                <div class="col-md-2 col-4">
+                    <div class="stat-card-mini">
+                        <div class="value text-danger" th:text="${outOfStockBooks}">0</div>
+                        <div class="label">Out of Stock</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <!-- Recent Orders -->
+                <div class="col-lg-8">
+                    <div class="admin-card">
+                        <div class="admin-card-header d-flex justify-content-between align-items-center">
+                            <span>Recent Orders</span>
+                            <a th:href="@{/admin/orders}" class="btn btn-sm btn-admin">View All →</a>
+                        </div>
+                        <div class="admin-card-body p-0">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Order #</th>
+                                        <th>Customer</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="order : ${recentOrders}">
+                                        <td>
+                                            <a th:href="@{/admin/orders/{id}(id=${order.id})}" th:text="${order.orderNumber}" class="fw-bold">ORD-001</a>
+                                        </td>
+                                        <td th:text="${order.user.username}">Customer</td>
+                                        <td><strong>$<span th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 2, 'POINT')}">0.00</span></strong></td>
+                                        <td>
+                                            <span class="badge" 
+                                                  th:classappend="${order.status.name() == 'PENDING'} ? 'bg-warning' : 
+                                                                  (${order.status.name() == 'PROCESSING'} ? 'bg-info' : 
+                                                                  (${order.status.name() == 'SHIPPED'} ? 'bg-primary' : 
+                                                                  (${order.status.name() == 'DELIVERED'} ? 'bg-success' : 'bg-danger')))"
+                                                  th:text="${order.status.displayName}">Pending</span>
+                                        </td>
+                                        <td class="text-muted" th:text="${#dates.format(order.orderDate, 'MMM dd')}">Jan 01</td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(recentOrders)}">
+                                        <td colspan="5" class="text-center text-muted py-4">
+                                            <div style="font-size: 2rem;">📭</div>
+                                            No orders yet
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="col-lg-4">
+                    <!-- Low Stock Alert -->
+                    <div class="admin-card mb-4">
+                        <div class="admin-card-header" th:classappend="${lowStockBooks > 0} ? 'bg-danger text-white'">
+                            <span>⚠️ Low Stock Alert</span>
+                        </div>
+                        <div class="admin-card-body p-0">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center" th:each="book, iter : ${lowStockList}" th:if="${iter.index < 5}">
+                                    <div>
+                                        <span th:text="${book.title}" class="d-block">Book Title</span>
+                                        <small class="text-muted" th:text="${book.author}">Author</small>
+                                    </div>
+                                    <span class="badge" th:classappend="${book.stock == 0} ? 'bg-danger' : 'bg-warning'" th:text="${book.stock == 0} ? 'OUT' : ${book.stock} + ' left'">0 left</span>
+                                </li>
+                                <li class="list-group-item text-center text-success py-3" th:if="${#lists.isEmpty(lowStockList)}">
+                                    ✅ All books well stocked
+                                </li>
+                            </ul>
+                            <div class="p-2 text-center border-top" th:if="${lowStockBooks > 5}">
+                                <a href="/admin/books" class="text-muted small">View all <span th:text="${lowStockBooks}">0</span> items →</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Categories Overview -->
+                    <div class="admin-card">
+                        <div class="admin-card-header d-flex justify-content-between align-items-center">
+                            <span>📂 Categories</span>
+                            <a href="/admin/categories" class="btn btn-sm btn-outline-secondary">Manage</a>
+                        </div>
+                        <div class="admin-card-body">
+                            <div th:each="cat, iter : ${categories}" th:if="${iter.index < 5}" class="category-item">
+                                <span th:text="${cat.name}">Category</span>
+                                <span class="badge bg-secondary" th:text="${cat.books != null ? cat.books.size() : 0} + ' books'">0 books</span>
+                            </div>
+                            <div th:if="${#lists.isEmpty(categories)}" class="text-center text-muted py-3">
+                                No categories yet
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <th:block th:replace="~{admin/admin-layout :: admin-scripts}"></th:block>
+</body>
+
+</html>

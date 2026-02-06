@@ -38,6 +38,20 @@ public class CategoryService {
     }
 
     public void deleteCategoryById(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Category not found"));
+        
+        // Check if category has books
+        if (category.getBooks() != null && !category.getBooks().isEmpty()) {
+            throw new IllegalStateException("Cannot delete category with existing books. Remove or reassign books first.");
+        }
+        
         categoryRepository.deleteById(id);
+    }
+    
+    public boolean hasBooks(Long categoryId) {
+        return categoryRepository.findById(categoryId)
+                .map(c -> c.getBooks() != null && !c.getBooks().isEmpty())
+                .orElse(false);
     }
 }

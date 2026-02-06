@@ -1,16 +1,11 @@
 package fit.hutech.spring.controllers;
 
-import fit.hutech.spring.daos.Item;
-
 import fit.hutech.spring.entities.Book;
 
 import fit.hutech.spring.services.BookService;
 
-import fit.hutech.spring.services.CartService;
-
 import fit.hutech.spring.services.CategoryService;
 
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -38,34 +33,50 @@ public class BookController {
 
         private final CategoryService categoryService;
 
-        private final CartService cartService;
-
         @GetMapping
-
         public String showAllBooks(@NotNull Model model,
-
+                        @RequestParam(required = false) String keyword,
+                        @RequestParam(required = false) Long categoryId,
+                        @RequestParam(required = false) Double minPrice,
+                        @RequestParam(required = false) Double maxPrice,
+                        @RequestParam(required = false) Boolean inStock,
+                        @RequestParam(defaultValue = "newest") String sortBy,
                         @RequestParam(defaultValue = "0") Integer pageNo,
+                        @RequestParam(defaultValue = "12") Integer pageSize) {
 
-                        @RequestParam(defaultValue = "20") Integer pageSize,
-
-                        @RequestParam(defaultValue = "id") String sortBy) {
-
-                model.addAttribute("books", bookService.getAllBooks(pageNo,
-
-                                pageSize, sortBy));
-
+                var allBooks = bookService.advancedSearch(keyword, categoryId, minPrice, maxPrice, inStock, sortBy);
+                
+                int totalBooks = allBooks.size();
+                int totalPages = Math.max(1, (int) Math.ceil(totalBooks / (double) pageSize));
+                int startIndex = pageNo * pageSize;
+                int endIndex = Math.min(startIndex + pageSize, totalBooks);
+                
+                var books = (startIndex < totalBooks) ? allBooks.subList(startIndex, endIndex) : allBooks;
+                
+                model.addAttribute("books", books);
                 model.addAttribute("currentPage", pageNo);
-
-                model.addAttribute("totalPages",
-
-                                bookService.getAllBooks(pageNo, pageSize, sortBy).size() / pageSize);
-
-                model.addAttribute("categories",
-
-                                categoryService.getAllCategories());
+                model.addAttribute("totalPages", totalPages);
+                model.addAttribute("categories", categoryService.getAllCategories());
+                
+                model.addAttribute("keyword", keyword);
+                model.addAttribute("selectedCategory", categoryId);
+                model.addAttribute("minPrice", minPrice);
+                model.addAttribute("maxPrice", maxPrice);
+                model.addAttribute("inStock", inStock);
+                model.addAttribute("sortBy", sortBy);
+                model.addAttribute("resultsCount", totalBooks);
 
                 return "book/list";
+        }
 
+        @GetMapping("/{id}")
+        public String showBookDetail(@PathVariable Long id, Model model) {
+                var book = bookService.getBookById(id)
+                        .orElseThrow(() -> new IllegalArgumentException("Book not found"));
+                model.addAttribute("book", book);
+                model.addAttribute("relatedBooks", bookService.getBooksByCategory(book.getCategory().getId())
+                        .stream().filter(b -> !b.getId().equals(id)).limit(4).toList());
+                return "book/detail";
         }
 
         @GetMapping("/api-list")
@@ -116,27 +127,6 @@ public class BookController {
                 return "redirect:/books";
         }
 
-        @PostMapping("/add-to-cart")
-
-        public String addToCart(HttpSession session,
-
-                        @RequestParam long id,
-
-                        @RequestParam String name,
-
-                        @RequestParam double price,
-
-                        @RequestParam(defaultValue = "1") int quantity) {
-
-                var cart = cartService.getCart(session);
-
-                cart.addItems(new Item(id, name, price, quantity));
-
-                cartService.updateCart(session, cart);
-
-                return "redirect:/books";
-
-        }
 
         @GetMapping("/delete/{id}")
         public String deleteBook(@PathVariable long id) {
@@ -177,20 +167,7 @@ public class BookController {
         }
 
         @GetMapping("/search")
-        public String searchBook(
-                        @NotNull Model model,
-                        @RequestParam String keyword,
-                        @RequestParam(defaultValue = "0") Integer pageNo,
-                        @RequestParam(defaultValue = "20") Integer pageSize,
-                        @RequestParam(defaultValue = "id") String sortBy) {
-                model.addAttribute("books", bookService.searchBook(keyword));
-                model.addAttribute("currentPage", pageNo);
-                model.addAttribute("totalPages",
-                                bookService
-                                                .getAllBooks(pageNo, pageSize, sortBy)
-                                                .size() / pageSize);
-                model.addAttribute("categories",
-                                categoryService.getAllCategories());
-                return "book/list";
+        public String searchBook(@RequestParam String keyword) {
+                return "redirect:/books?keyword=" + keyword;
         }
 }

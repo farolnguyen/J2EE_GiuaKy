@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Wishlist - Story Station</title>
+    <th:block th:replace="~{layout::link-css}"></th:block>
+    <th:block th:replace="~{layout::custom-css}"></th:block>
+</head>
+
+<body>
+    <th:block th:replace="~{layout::header}"></th:block>
+    
+    <div class="ss-container" style="padding-top: 2rem; margin-bottom: 50px;">
+        <h2 class="ss-section-title">❤️ My Wishlist</h2>
+        
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${success}">Success</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${wishlistItems != null && !wishlistItems.isEmpty()}">
+            <p class="text-muted mb-4">
+                You have <strong th:text="${wishlistCount}">0</strong> items in your wishlist
+            </p>
+            
+            <div class="ss-book-grid">
+                <div th:each="item : ${wishlistItems}">
+                    <div class="ss-book-card" style="position: relative;">
+                        <a th:href="@{/wishlist/remove/{id}(id=${item.book.id})}" 
+                           class="btn btn-sm btn-outline-danger position-absolute" 
+                           style="top: 10px; right: 10px; z-index: 10;"
+                           onclick="return confirm('Remove from wishlist?')">✕</a>
+                        
+                        <a th:href="@{/books/{id}(id=${item.book.id})}" class="text-decoration-none">
+                            <div class="ss-book-image">
+                                <img th:if="${item.book.imageUrl}" th:src="${item.book.imageUrl}" th:alt="${item.book.title}">
+                                <span th:unless="${item.book.imageUrl}" class="no-image">No Image</span>
+                            </div>
+                            <div class="ss-book-body">
+                                <div class="ss-book-category" th:text="${item.book.category?.name}">Category</div>
+                                <h3 class="ss-book-title" th:text="${item.book.title}">Book Title</h3>
+                                <p class="ss-book-author" th:text="'by ' + ${item.book.author}">by Author</p>
+                                <div class="ss-book-price">
+                                    <span class="ss-price-current">
+                                        $<span th:text="${#numbers.formatDecimal(item.book.price * (1 - (item.book.discount ?: 0)/100), 0, 'COMMA', 2, 'POINT')}">0.00</span>
+                                    </span>
+                                </div>
+                                <small class="text-muted">
+                                    Added <span th:text="${#dates.format(item.addedDate, 'MMM dd, yyyy')}">Jan 01</span>
+                                </small>
+                            </div>
+                        </a>
+                        <div class="ss-book-actions">
+                            <form th:action="@{/cart/add}" method="post" class="flex-grow-1">
+                                <input type="hidden" name="id" th:value="${item.book.id}">
+                                <button type="submit" class="ss-btn ss-btn-primary w-100">Add to Cart</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div th:if="${wishlistItems == null || wishlistItems.isEmpty()}" class="text-center py-5">
+            <div style="font-size: 5rem;">❤️</div>
+            <h3 class="mt-3">Your wishlist is empty</h3>
+            <p class="text-muted">Save books you love for later!</p>
+            <a href="/books" class="ss-btn ss-btn-primary">Browse Books</a>
+        </div>
+    </div>
+
+    <th:block th:replace="~{layout::footer}"></th:block>
+</body>
+
+</html>

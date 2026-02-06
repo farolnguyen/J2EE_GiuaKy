@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Disabled</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .error-container {
+            max-width: 600px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 50px;
+            text-align: center;
+        }
+        .error-icon {
+            font-size: 80px;
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+        .error-title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .error-message {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        .contact-box {
+            background: #f8f9fa;
+            border-left: 4px solid #dc3545;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        .contact-box h5 {
+            color: #dc3545;
+            margin-bottom: 10px;
+        }
+        .contact-box p {
+            margin-bottom: 5px;
+            color: #555;
+        }
+        .btn-home {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 12px 40px;
+            color: white;
+            font-size: 16px;
+            border-radius: 25px;
+            transition: all 0.3s;
+        }
+        .btn-home:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-icon">🚫</div>
+        <h1 class="error-title">Account Disabled</h1>
+        <p class="error-message">
+            Your account has been disabled by an administrator. 
+            You cannot access this service at this time.
+        </p>
+        
+        <div class="contact-box">
+            <h5>📧 Need Help?</h5>
+            <p><strong>Reason:</strong> Your account has been temporarily or permanently disabled due to policy violations or administrative action.</p>
+            <p><strong>What to do:</strong> Please contact our support team to appeal this decision or request account reactivation.</p>
+            <p><strong>Email:</strong> support@example.com</p>
+        </div>
+        
+        <a href="/" class="btn btn-home">
+            🏠 Return to Homepage
+        </a>
+        
+        <div class="mt-4">
+            <small class="text-muted">
+                If you believe this is a mistake, please contact our support team with your account details.
+            </small>
+        </div>
+    </div>
+</body>
+</html>

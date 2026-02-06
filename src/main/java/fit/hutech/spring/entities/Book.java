@@ -23,23 +23,62 @@ public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-@Column(name = "title", length = 50, nullable = false)
-@Size(min = 1, max = 50, message = "Title must be between 1 and 50 characters")
-@NotBlank(message = "Title must not be blank")
-private String title;
-    @Column(name = "author", length = 50, nullable = false)
-    @Size(min = 1, max = 50
-    ,message="Author must be between 1 and 50characters")@NotBlank(message="Author must not be blank")private String author;
+
+    @Column(name = "title", length = 100, nullable = false)
+    @Size(min = 1, max = 100, message = "Title must be between 1 and 100 characters")
+    @NotBlank(message = "Title must not be blank")
+    private String title;
+
+    @Column(name = "author", length = 100, nullable = false)
+    @Size(min = 1, max = 100, message = "Author must be between 1 and 100 characters")
+    @NotBlank(message = "Author must not be blank")
+    private String author;
+
     @Column(name = "price")
     @Positive(message = "Price must be greater than 0")
     private Double price;
+
+    @Column(name = "image_url", length = 500)
+    private String imageUrl;
+
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
+
+    @Column(name = "publisher", length = 100)
+    private String publisher;
+
+    @Column(name = "publication_year")
+    private Integer publicationYear;
+
+    @Column(name = "stock")
+    @Builder.Default
+    private Integer stock = 0;
+
+    @Column(name = "discount")
+    @Builder.Default
+    private Double discount = 0.0;
+
+    @Column(name = "featured")
+    @Builder.Default
+    private Boolean featured = false;
+
+    @Column(name = "enabled")
+    @Builder.Default
+    private Boolean enabled = true;
+
+    @Column(name = "stock_alert_threshold")
+    @Builder.Default
+    private Integer stockAlertThreshold = 10;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     @ValidCategoryId
     @ToString.Exclude
     private Category category;
+
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     @ToString.Exclude
+    @Builder.Default
     private List<ItemInvoice> itemInvoices = new ArrayList<>();
 
     @Override

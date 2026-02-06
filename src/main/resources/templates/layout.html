@@ -4,84 +4,75 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>My App</title>
+    <title>Story Station - Your Book Paradise</title>
     <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
-    <link th:fragment="custom-css" rel="stylesheet" th:href="@{/css/style.css}">
+    <link th:fragment="custom-css" rel="stylesheet" th:href="@{/css/story-station.css}">
+    <link th:fragment="animations-css" rel="stylesheet" th:href="@{/css/animations.css}">
 </head>
 
-<body class="d-flex flex-column h-100">
-    <header th:fragment="header">
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="/">HUTECH</a>
-
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link" href="/">Home</a>
-                        </li>
-                        <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN','USER')">
-                            <a class="nav-link" href="/books">List Book</a>
-                        </li>
-                        <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN','USER')">
-                            <a class="nav-link" href="/books/api-list">API Book List</a>
-                        </li>
-                        <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN','USER')">
-                            <a class="nav-link" href="/cart">Cart</a>
-                        </li>
-                        <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN','USER')">
-                            <a class="nav-link" href="/api-login">JWT Test</a>
-                        </li>
-                    </ul>
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
-                        <li class="nav-item me-3" sec:authorize="isAuthenticated()">
-                            <span class="navbar-text" sec:authorize="hasAuthority('ADMIN')">
-                                Xin chào Admin, <strong sec:authentication="name"></strong>
-                            </span>
-                            <span class="navbar-text" sec:authorize="!hasAuthority('ADMIN')">
-                                Xin chào, <strong sec:authentication="name"></strong>
-                            </span>
-                        </li>
-                        <li class="nav-item" sec:authorize="isAuthenticated()">
+<body>
+    <header th:fragment="header" class="ss-header">
+        <div class="ss-header-inner">
+            <div class="ss-header-left">
+                <a href="/" class="ss-brand">Story Station</a>
+                <nav class="ss-nav">
+                    <a href="/" class="ss-nav-link">Home</a>
+                    <a href="/books" class="ss-nav-link">Books</a>
+                    <a href="/admin/dashboard" class="ss-nav-link" sec:authorize="hasAuthority('ADMIN')">Admin</a>
+                </nav>
+            </div>
+            
+            <div class="ss-nav-actions">
+                <a href="/wishlist" class="ss-nav-link" sec:authorize="hasAnyAuthority('ADMIN','USER')" title="Wishlist">❤️ Wishlist</a>
+                <a href="/cart" class="ss-btn ss-btn-secondary ss-cart-badge" sec:authorize="hasAnyAuthority('ADMIN','USER')">
+                    🛒 Cart
+                </a>
+                
+                <div sec:authorize="isAuthenticated()" class="dropdown">
+                    <button class="ss-btn ss-btn-outline dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span sec:authentication="name">User</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" href="/profile"><strong>My Profile</strong></a></li>
+                        <li><a class="dropdown-item" href="/orders"><strong>My Orders</strong></a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li sec:authorize="hasAuthority('ADMIN')"><a class="dropdown-item" href="/admin/dashboard"><strong>Admin Panel</strong></a></li>
+                        <li sec:authorize="hasAuthority('ADMIN')"><hr class="dropdown-divider"></li>
+                        <li>
                             <form th:action="@{/logout}" method="post" class="d-inline" id="logoutForm">
-                                <button class="btn btn-outline-secondary btn-sm" type="button" onclick="handleLogout()">Logout</button>
+                                <button class="dropdown-item text-danger" type="submit"><strong>Logout</strong></button>
                             </form>
-                        </li>
-                        <li class="nav-item" sec:authorize="!isAuthenticated()">
-                            <a class="btn btn-outline-primary btn-sm" href="/login">Login</a>
                         </li>
                     </ul>
                 </div>
+                
+                <a href="/login" class="ss-btn ss-btn-primary" sec:authorize="!isAuthenticated()">Login</a>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <div th:fragment="content"></div>
-    </div>
-    <footer th:fragment="footer" class="footer mt-auto py-1">
-        <div class="container text-center">
-            <p class="mb-1">Copyright &copy; <span th:text="${#dates.year(#dates.createNow())}"></span></p>
-            <p class="mb-0">Mini-project này được thực hiện bởi <strong>FarolNguyen</strong> a.k.a <strong>Nguyễn Hải Đăng</strong></p>
         </div>
-        <script th:src="@{/js/jquery-3.7.0.min.js}"></script>
-        <script th:src="@{/js/bootstrap.min.js}"></script>
+    </header>
+
+    <main class="ss-main">
+        <div th:fragment="content"></div>
+    </main>
+
+    <footer th:fragment="footer" class="ss-footer">
+        <div class="ss-footer-inner">
+            <div>
+                <strong>Story Station</strong> &copy; <span th:text="${#dates.year(#dates.createNow())}">2026</span>
+            </div>
+            <div>
+                Built with love by <a href="#">Nguyen Hai Dang</a>
+            </div>
+        </div>
+        <script th:src="@{/js/jquery-4.0.0.min.js}"></script>
+        <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
         <script th:src="@{/js/jwt-interceptor.js}"></script>
         <script>
             function handleLogout() {
-                // Clear all JWT data from localStorage
                 localStorage.removeItem('jwt_token');
                 localStorage.removeItem('jwt_user');
                 localStorage.removeItem('jwt_original_token');
-                
-                // Submit the logout form
                 document.getElementById('logoutForm').submit();
             }
         </script>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${book.id != null} ? 'Edit Book' : 'Add Book' + ' - Admin | Story Station'">Book Form</title>
+    <th:block th:replace="~{admin/admin-layout :: admin-css}"></th:block>
+    <th:block th:replace="~{admin/admin-layout :: admin-inline-css}"></th:block>
+</head>
+
+<body>
+    <th:block th:replace="~{admin/admin-layout :: sidebar}"></th:block>
+    
+    <main class="admin-main">
+        <header class="admin-header">
+            <div>
+                <h5 class="mb-0" th:text="${book.id != null} ? 'Edit Book' : 'Add New Book'">Book Form</h5>
+            </div>
+            <div>
+                <a th:href="@{/admin/books}" class="btn btn-outline-secondary">← Back to Books</a>
+            </div>
+        </header>
+        
+        <div class="admin-content">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="admin-card">
+                        <div class="admin-card-body">
+                            <form th:action="${book.id != null} ? @{/admin/books/edit} : @{/admin/books/add}" 
+                                  method="post" th:object="${book}">
+                                <input type="hidden" th:field="*{id}">
+                                
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div class="mb-3">
+                                            <label for="title" class="form-label">Title <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="title" th:field="*{title}" required>
+                                            <div th:if="${#fields.hasErrors('title')}" class="text-danger" th:errors="*{title}"></div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="author" class="form-label">Author <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="author" th:field="*{author}" required>
+                                            <div th:if="${#fields.hasErrors('author')}" class="text-danger" th:errors="*{author}"></div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="description" class="form-label">Description</label>
+                                            <textarea class="form-control" id="description" th:field="*{description}" rows="4"></textarea>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label for="imageUrl" class="form-label">Image URL</label>
+                                            <input type="text" class="form-control" id="imageUrl" th:field="*{imageUrl}">
+                                            <small class="text-muted">Paste image URL here</small>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="category" class="form-label">Category <span class="text-danger">*</span></label>
+                                            <select class="form-select" id="category" name="category.id" required>
+                                                <option value="">-- Select Category --</option>
+                                                <option th:each="cat : ${categories}" 
+                                                        th:value="${cat.id}" 
+                                                        th:text="${cat.name}"
+                                                        th:selected="${book.category != null && book.category.id == cat.id}">Category</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="mb-3">
+                                            <label for="price" class="form-label">Price ($) <span class="text-danger">*</span></label>
+                                            <input type="number" step="0.01" class="form-control" id="price" th:field="*{price}" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="mb-3">
+                                            <label for="discount" class="form-label">Discount (%)</label>
+                                            <input type="number" step="0.1" min="0" max="100" class="form-control" id="discount" th:field="*{discount}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="mb-3">
+                                            <label for="stock" class="form-label">Stock</label>
+                                            <input type="number" min="0" class="form-control" id="stock" 
+                                                   th:field="*{stock}" 
+                                                   th:readonly="${book.id != null}">
+                                            <small class="text-muted" th:if="${book.id != null}">
+                                                Current: <span th:text="${book.stock}">0</span> units
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3" th:if="${book.id != null}">
+                                        <div class="mb-3">
+                                            <label for="addStock" class="form-label">Add Stock</label>
+                                            <input type="number" min="0" class="form-control" id="addStock" name="addStock" value="0">
+                                            <small class="text-muted">Add more units</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="mb-3">
+                                            <label for="publicationYear" class="form-label">Year</label>
+                                            <input type="number" min="1900" max="2100" class="form-control" id="publicationYear" th:field="*{publicationYear}">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="publisher" class="form-label">Publisher</label>
+                                            <input type="text" class="form-control" id="publisher" th:field="*{publisher}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3 pt-4">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="featured" th:field="*{featured}">
+                                                <label class="form-check-label" for="featured">⭐ Mark as Featured (Best Seller)</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex gap-2 justify-content-end">
+                                    <a th:href="@{/admin/books}" class="btn btn-outline-secondary">Cancel</a>
+                                    <button type="submit" class="btn btn-admin" th:text="${book.id != null} ? 'Update Book' : 'Add Book'">Save</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <th:block th:replace="~{admin/admin-layout :: admin-scripts}"></th:block>
+</body>
+
+</html>

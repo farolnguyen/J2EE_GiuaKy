@@ -1,0 +1,507 @@
+/* Story Station - E-commerce Theme */
+/* Color Palette: Navy Blue, Sand Yellow, Terracotta, Pine Green */
+
+:root {
+    --navy-blue: #1e3a5f;
+    --navy-dark: #152a45;
+    --navy-light: #2d4a6f;
+    --sand-yellow: #f5e6d3;
+    --sand-light: #faf4eb;
+    --sand-dark: #e8d5bc;
+    --terracotta: #d4693f;
+    --terracotta-dark: #b85a35;
+    --terracotta-light: #e07a50;
+    --pine-green: #3d5a3d;
+    --pine-dark: #2d452d;
+    --pine-light: #4d6a4d;
+    
+    --text-dark: #2c3e50;
+    --text-muted: #6c757d;
+    --text-light: #ffffff;
+    --bg-light: #f8f9fa;
+    --border-color: #dee2e6;
+}
+
+/* Base Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-dark);
+    background-color: var(--sand-light);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--navy-blue);
+    font-weight: 600;
+}
+
+a {
+    color: var(--navy-blue);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+a:hover {
+    color: var(--terracotta);
+}
+
+/* Header Styles */
+.ss-header {
+    background: var(--sand-light);
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.ss-header-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 50px;
+    padding: 0.75rem 2rem;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.ss-header-left {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.ss-brand {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--navy-blue);
+    letter-spacing: -0.5px;
+}
+
+.ss-brand:hover {
+    color: var(--navy-blue);
+}
+
+.ss-nav {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.ss-nav-link {
+    color: var(--text-dark);
+    font-weight: 500;
+    padding: 0.5rem 0;
+    position: relative;
+}
+
+.ss-nav-link:hover {
+    color: var(--terracotta);
+}
+
+.ss-nav-link.active {
+    color: var(--terracotta);
+}
+
+.ss-nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--terracotta);
+    border-radius: 1px;
+}
+
+.ss-nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.ss-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.25rem;
+    border-radius: 25px;
+    font-weight: 500;
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+}
+
+.ss-btn-primary {
+    background: var(--navy-blue);
+    color: white;
+}
+
+.ss-btn-primary:hover {
+    background: var(--navy-dark);
+    color: white;
+}
+
+.ss-btn-secondary {
+    background: var(--sand-yellow);
+    color: var(--navy-blue);
+}
+
+.ss-btn-secondary:hover {
+    background: var(--sand-dark);
+    color: var(--navy-blue);
+}
+
+.ss-btn-terracotta {
+    background: var(--terracotta);
+    color: white;
+}
+
+.ss-btn-terracotta:hover {
+    background: var(--terracotta-dark);
+    color: white;
+}
+
+.ss-btn-outline {
+    background: transparent;
+    border: 2px solid var(--navy-blue);
+    color: var(--navy-blue);
+}
+
+.ss-btn-outline:hover {
+    background: var(--navy-blue);
+    color: white;
+}
+
+/* Cart Badge */
+.ss-cart-badge {
+    position: relative;
+}
+
+.ss-cart-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: var(--terracotta);
+    color: white;
+    font-size: 0.7rem;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+/* Main Content */
+.ss-main {
+    flex: 1;
+    padding-bottom: 80px;
+}
+
+/* Footer Styles */
+.ss-footer {
+    background: var(--navy-blue);
+    color: var(--sand-light);
+    padding: 1rem 0;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+}
+
+.ss-footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ss-footer a {
+    color: var(--sand-yellow);
+}
+
+.ss-footer a:hover {
+    color: var(--terracotta-light);
+}
+
+/* Hero Banner */
+.ss-hero {
+    background: linear-gradient(135deg, var(--navy-blue) 0%, var(--navy-dark) 100%);
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.ss-hero h1 {
+    color: white;
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.ss-hero p {
+    font-size: 1.25rem;
+    color: var(--sand-yellow);
+    margin-bottom: 2rem;
+}
+
+/* Section Titles */
+.ss-section-title {
+    font-size: 1.75rem;
+    color: var(--navy-blue);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px solid var(--terracotta);
+    display: inline-block;
+}
+
+/* Book Grid - uses CSS Grid for responsive layout */
+.ss-book-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 240px));
+    gap: 1rem;
+    justify-content: start;
+}
+
+@media (min-width: 768px) {
+    .ss-book-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 250px));
+        gap: 1.25rem;
+    }
+}
+
+@media (min-width: 992px) {
+    .ss-book-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 260px));
+        gap: 1.5rem;
+    }
+}
+
+/* Book Cards */
+.ss-book-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    max-width: 280px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.ss-book-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.ss-book-image {
+    height: 200px;
+    background: var(--sand-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.ss-book-image img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: cover;
+}
+
+.ss-book-image .no-image {
+    color: var(--text-muted);
+    font-size: 3rem;
+}
+
+.ss-book-body {
+    padding: 1rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.ss-book-category {
+    font-size: 0.75rem;
+    color: var(--pine-green);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+}
+
+.ss-book-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--navy-blue);
+    margin-bottom: 0.25rem;
+    line-height: 1.3;
+}
+
+.ss-book-author {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+}
+
+.ss-book-price {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ss-price-original {
+    text-decoration: line-through;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.ss-price-current {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--terracotta);
+}
+
+.ss-book-actions {
+    padding: 1rem;
+    padding-top: 0;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.ss-book-actions .ss-btn {
+    flex: 1;
+    justify-content: center;
+    padding: 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Featured Badge */
+.ss-featured-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--terracotta);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Stock Badge */
+.ss-stock-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+}
+
+.ss-stock-badge.in-stock {
+    background: #d4edda;
+    color: #155724;
+}
+
+.ss-stock-badge.low-stock {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.ss-stock-badge.out-of-stock {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* Container */
+.ss-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+/* Cards */
+.ss-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.ss-card-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 600;
+    color: var(--navy-blue);
+}
+
+.ss-card-body {
+    padding: 1.5rem;
+}
+
+/* Forms */
+.ss-form-control {
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    transition: border-color 0.2s;
+}
+
+.ss-form-control:focus {
+    border-color: var(--navy-blue);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.1);
+}
+
+/* Alerts */
+.ss-alert {
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.ss-alert-success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.ss-alert-error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .ss-header-inner {
+        border-radius: 0;
+        padding: 0.5rem 1rem;
+    }
+    
+    .ss-nav {
+        display: none;
+    }
+    
+    .ss-hero h1 {
+        font-size: 2rem;
+    }
+    
+    .ss-footer-inner {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.5rem;
+    }
+}

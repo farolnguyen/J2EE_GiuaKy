@@ -5,19 +5,114 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ỨNG DỤNG QUẢN LÝ SÁCH</title>
+    <title>Story Station - Your Book Paradise</title>
     <th:block th:replace="~{layout::link-css}"></th:block>
     <th:block th:replace="~{layout::custom-css}"></th:block>
+    <th:block th:replace="~{layout::animations-css}"></th:block>
 </head>
 
 <body>
     <th:block th:replace="~{layout::header}"></th:block>
-    <div class="container">
-        <div class="home-hero">
-            <h1 class="home-title">TRANG CHỦ ỨNG DỤNG QUẢN LÝ SÁCH</h1>
-            <h2 class="home-subtitle">KẾT NỐI CSDL MYSQL</h2>
+    
+    <!-- Hero Banner -->
+    <section class="ss-hero">
+        <div class="ss-container">
+            <h1>Welcome to Story Station</h1>
+            <p>Discover your next favorite book from our curated collection</p>
+            <a href="/books" class="ss-btn ss-btn-terracotta" sec:authorize="hasAnyAuthority('ADMIN','USER')">
+                Browse All Books →
+            </a>
+            <a href="/login" class="ss-btn ss-btn-terracotta" sec:authorize="!isAuthenticated()">
+                Login to Start Shopping →
+            </a>
         </div>
+    </section>
+
+    <div class="ss-container" style="padding-top: 2rem; margin-bottom: 50px;">
+        <!-- Categories Quick Links -->
+        <section class="mb-5" th:if="${categories != null && !categories.isEmpty()}">
+            <h2 class="ss-section-title">Browse by Category</h2>
+            <div class="d-flex flex-wrap gap-2">
+                <a th:each="category : ${categories}" 
+                   th:href="@{/books(categoryId=${category.id})}"
+                   class="ss-btn ss-btn-secondary"
+                   th:text="${category.name}">Category</a>
+            </div>
+        </section>
+
+        <!-- Best Sellers / Featured Books -->
+        <section class="mb-5">
+            <h2 class="ss-section-title">Best Sellers</h2>
+            
+            <div class="ss-book-grid stagger-children" th:if="${featuredBooks != null && !featuredBooks.isEmpty()}">
+                <div th:each="book : ${featuredBooks}">
+                    <div class="ss-book-card" style="position: relative;">
+                        <span class="ss-featured-badge" th:if="${book.featured}">Best Seller</span>
+                        <a th:href="@{/books/{id}(id=${book.id})}" style="text-decoration: none; color: inherit;">
+                            <div class="ss-book-image">
+                                <img th:if="${book.imageUrl}" th:src="${book.imageUrl}" th:alt="${book.title}">
+                                <span th:unless="${book.imageUrl}" class="no-image">No Image</span>
+                            </div>
+                            <div class="ss-book-body">
+                                <div class="ss-book-category" th:text="${book.category?.name}">Category</div>
+                                <h3 class="ss-book-title" th:text="${book.title}">Book Title</h3>
+                                <p class="ss-book-author" th:text="'by ' + ${book.author}">by Author</p>
+                                <div class="ss-book-price">
+                                    <span class="ss-price-original" th:if="${book.discount != null && book.discount > 0}">
+                                        $<span th:text="${#numbers.formatDecimal(book.price, 0, 'COMMA', 2, 'POINT')}">0.00</span>
+                                    </span>
+                                    <span class="ss-price-current">
+                                        $<span th:text="${#numbers.formatDecimal(book.price * (1 - (book.discount ?: 0)/100), 0, 'COMMA', 2, 'POINT')}">0.00</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                        <div class="ss-book-actions">
+                            <a th:href="@{/books/{id}(id=${book.id})}" class="ss-btn ss-btn-secondary">View Details</a>
+                            <a th:href="@{/cart/add/{id}(id=${book.id})}" class="ss-btn ss-btn-primary" sec:authorize="hasAnyAuthority('ADMIN','USER')">Add to Cart</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div th:if="${featuredBooks == null || featuredBooks.isEmpty()}" class="text-center py-5">
+                <p class="text-muted">No featured books yet. Check back soon!</p>
+                <a href="/books" class="ss-btn ss-btn-secondary" sec:authorize="hasAnyAuthority('ADMIN','USER')">Browse All Books</a>
+            </div>
+        </section>
+
+        <!-- Why Choose Us -->
+        <section class="mb-5">
+            <h2 class="ss-section-title">Why Choose Story Station?</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="ss-card">
+                        <div class="ss-card-body text-center">
+                            <h4 class="mt-3"><strong>Curated Collection</strong></h4>
+                            <p class="text-muted">Hand-picked books across all genres</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="ss-card">
+                        <div class="ss-card-body text-center">
+                            <h4 class="mt-3"><strong>Fast Delivery</strong></h4>
+                            <p class="text-muted">Quick shipping to your doorstep</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="ss-card">
+                        <div class="ss-card-body text-center">
+                            <h4 class="mt-3"><strong>Best Prices</strong></h4>
+                            <p class="text-muted">Competitive prices and great discounts</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
+
     <th:block th:replace="~{layout::footer}"></th:block>
 </body>
 

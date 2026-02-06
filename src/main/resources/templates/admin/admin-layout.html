@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:fragment="title">Admin - Story Station</title>
+    <link th:fragment="admin-css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link th:fragment="admin-custom-css" rel="stylesheet" th:href="@{/css/admin.css}">
+    <link th:fragment="admin-animations-css" rel="stylesheet" th:href="@{/css/animations.css}">
+    <style th:fragment="admin-inline-css">
+        :root {
+            --navy-blue: #1e3a5f;
+            --sand-yellow: #f5e6d3;
+            --terracotta: #d4693f;
+            --pine-green: #3d5a3d;
+            --sidebar-width: 250px;
+        }
+        
+        body {
+            min-height: 100vh;
+            background-color: #f8f9fa;
+        }
+        
+        .admin-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--navy-blue);
+            color: white;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        
+        .admin-sidebar .brand {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+        }
+        
+        .admin-sidebar .brand h4 {
+            margin: 0;
+            font-weight: bold;
+            color: var(--sand-yellow);
+        }
+        
+        .admin-sidebar .brand small {
+            color: rgba(255,255,255,0.7);
+        }
+        
+        .admin-sidebar .nav-menu {
+            padding: 1rem 0;
+        }
+        
+        .admin-sidebar .nav-item {
+            padding: 0;
+        }
+        
+        .admin-sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        
+        .admin-sidebar .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        
+        .admin-sidebar .nav-link.active {
+            background: rgba(255,255,255,0.15);
+            color: var(--sand-yellow);
+            border-left-color: var(--terracotta);
+        }
+        
+        .admin-sidebar .nav-section {
+            padding: 0.5rem 1.5rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.5);
+            margin-top: 1rem;
+        }
+        
+        .admin-main {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+        }
+        
+        .admin-header {
+            background: white;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .admin-content {
+            padding: 1.5rem;
+        }
+        
+        .admin-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+        }
+        
+        .admin-card-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #dee2e6;
+            font-weight: 600;
+        }
+        
+        .admin-card-body {
+            padding: 1.5rem;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 1.5rem;
+        }
+        
+        .stat-card .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--navy-blue);
+        }
+        
+        .stat-card .stat-label {
+            color: #6c757d;
+            font-size: 0.875rem;
+        }
+        
+        .btn-admin {
+            background: var(--navy-blue);
+            color: white;
+            border: none;
+        }
+        
+        .btn-admin:hover {
+            background: #152a45;
+            color: white;
+        }
+        
+        .btn-terracotta {
+            background: var(--terracotta);
+            color: white;
+            border: none;
+        }
+        
+        .btn-terracotta:hover {
+            background: #b85a35;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <aside th:fragment="sidebar" class="admin-sidebar">
+        <div class="brand">
+            <h4>Story Station</h4>
+            <small>Admin Panel</small>
+        </div>
+        <nav class="nav-menu">
+            <div class="nav-section">Main</div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${currentPage == 'dashboard'} ? 'active'" th:href="@{/admin/dashboard}">
+                        Dashboard
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="nav-section">Catalog</div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${currentPage == 'books'} ? 'active'" th:href="@{/admin/books}">
+                        Books
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${currentPage == 'categories'} ? 'active'" th:href="@{/admin/categories}">
+                        Categories
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="nav-section">Sales</div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${currentPage == 'orders'} ? 'active'" th:href="@{/admin/orders}">
+                        Orders
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${currentPage == 'reports'} ? 'active'" th:href="@{/admin/reports}">
+                        Reports
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="nav-section">Users</div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${currentPage == 'users'} ? 'active'" th:href="@{/admin/users}">
+                        Users
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="nav-section">System</div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/}">
+                        Back to Store
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="document.getElementById('adminLogoutForm').submit(); return false;">
+                        Logout
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <form th:action="@{/logout}" method="post" id="adminLogoutForm" style="display: none;"></form>
+    </aside>
+
+    <main th:fragment="main" class="admin-main">
+        <header class="admin-header">
+            <div>
+                <h5 class="mb-0" th:text="${pageTitle ?: 'Dashboard'}">Dashboard</h5>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <span class="text-muted">Welcome, <strong sec:authentication="name">Admin</strong></span>
+            </div>
+        </header>
+        <div class="admin-content" th:fragment="content">
+            <!-- Page content goes here -->
+        </div>
+    </main>
+
+    <th:block th:fragment="admin-scripts">
+        <script th:src="@{/js/jquery-3.7.0.min.js}"></script>
+        <script th:src="@{/js/bootstrap.min.js}"></script>
+    </th:block>
+</body>
+
+</html>

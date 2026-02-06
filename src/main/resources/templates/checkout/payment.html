@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Payment | Story Station</title>
+    <th:block th:replace="~{layout::link-css}"></th:block>
+    <th:block th:replace="~{layout::custom-css}"></th:block>
+    <style>
+        .checkout-steps { display: flex; justify-content: center; margin-bottom: 2rem; }
+        .checkout-step { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; }
+        .checkout-step.active { color: var(--terracotta); font-weight: bold; }
+        .checkout-step.completed { color: var(--pine-green); }
+        .step-number { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #dee2e6; }
+        .checkout-step.active .step-number { background: var(--terracotta); color: white; }
+        .checkout-step.completed .step-number { background: var(--pine-green); color: white; }
+        .payment-option { border: 2px solid #dee2e6; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; cursor: pointer; }
+        .payment-option:hover { border-color: var(--navy-blue); }
+        .payment-option.selected { border-color: var(--terracotta); background: var(--sand-light); }
+    </style>
+</head>
+
+<body>
+    <th:block th:replace="~{layout::header}"></th:block>
+    
+    <div class="ss-container" style="padding-top: 2rem; margin-bottom: 50px;">
+        <!-- Progress Steps -->
+        <div class="checkout-steps">
+            <div class="checkout-step completed">
+                <span class="step-number">✓</span> Shipping
+            </div>
+            <div class="checkout-step active">
+                <span class="step-number">2</span> Payment
+            </div>
+            <div class="checkout-step">
+                <span class="step-number">3</span> Confirm
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="ss-card">
+                    <div class="ss-card-header">Payment Method</div>
+                    <div class="ss-card-body">
+                        <form th:action="@{/checkout/confirm}" method="post" id="paymentForm">
+                            <div class="payment-option" onclick="selectPayment('cod')">
+                                <input type="radio" name="paymentMethod" value="Cash on Delivery" id="cod" checked>
+                                <label for="cod" class="ms-2">
+                                    <strong>💵 Cash on Delivery (COD)</strong>
+                                    <br><small class="text-muted">Pay when you receive your order</small>
+                                </label>
+                            </div>
+                            
+                            <div class="payment-option" onclick="selectPayment('card')">
+                                <input type="radio" name="paymentMethod" value="Credit Card (Demo)" id="card">
+                                <label for="card" class="ms-2">
+                                    <strong>💳 Credit Card (Demo)</strong>
+                                    <br><small class="text-muted">Simulated payment - no real charges</small>
+                                </label>
+                            </div>
+                            
+                            <div class="payment-option" onclick="selectPayment('bank')">
+                                <input type="radio" name="paymentMethod" value="Bank Transfer (Demo)" id="bank">
+                                <label for="bank" class="ms-2">
+                                    <strong>🏦 Bank Transfer (Demo)</strong>
+                                    <br><small class="text-muted">Simulated bank transfer</small>
+                                </label>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mt-4">
+                                <a href="/checkout" class="ss-btn ss-btn-secondary">← Back to Shipping</a>
+                                <button type="submit" class="ss-btn ss-btn-primary">Review Order →</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Shipping Summary -->
+                <div class="ss-card mt-4">
+                    <div class="ss-card-header">Shipping To</div>
+                    <div class="ss-card-body">
+                        <p class="mb-1" th:text="${shippingAddress}">Address</p>
+                        <p class="mb-1"><span th:text="${shippingCity}">City</span>, <span th:text="${shippingPostalCode}">Postal</span></p>
+                        <p class="mb-0" th:text="${shippingCountry}">Country</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="ss-card">
+                    <div class="ss-card-header">Order Summary</div>
+                    <div class="ss-card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Items (<span th:text="${totalQuantity}">0</span>)</span>
+                            <span>$<span th:text="${#numbers.formatDecimal(totalPrice, 0, 'COMMA', 2, 'POINT')}">0.00</span></span>
+                        </div>
+                        <div class="mb-3" th:each="item : ${cartItems}">
+                            <div class="d-flex justify-content-between">
+                                <span th:text="${item.book.title}">Book</span>
+                                <span>x<span th:text="${item.quantity}">1</span></span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <strong>Total</strong>
+                            <strong style="color: var(--terracotta);">$<span th:text="${#numbers.formatDecimal(totalPrice, 0, 'COMMA', 2, 'POINT')}">0.00</span></strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:replace="~{layout::footer}"></th:block>
+    <script>
+        function selectPayment(id) {
+            document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
+            document.getElementById(id).checked = true;
+            document.getElementById(id).closest('.payment-option').classList.add('selected');
+        }
+        document.querySelector('.payment-option').classList.add('selected');
+    </script>
+</body>
+
+</html>
